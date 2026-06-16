@@ -6,224 +6,466 @@
 <title>Carteirinha Digital — Sistema de Acesso Escolar</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,400&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 <style>
   :root{
     --ink:#1B2A4A;
     --ink-deep:#101b33;
+    --ink-mid:#2a3f6a;
     --paper:#F7F4EC;
-    --paper-dim:#ECE7D8;
+    --paper-dim:#EDE8D8;
+    --paper-bright:#FDFBF5;
     --gold:#C8A04B;
     --gold-soft:#E3C77E;
-    --ok:#2F7D5C;
-    --ok-soft:#DCEFE5;
-    --danger:#B43B3B;
-    --danger-soft:#F6DEDE;
-    --warn:#A6781E;
-    --warn-soft:#F7ECD2;
+    --gold-pale:#F5EDCF;
+    --ok:#22745A;
+    --ok-soft:#D4EDE4;
+    --ok-ring:#A8D9C6;
+    --danger:#A83030;
+    --danger-soft:#F5DADA;
+    --warn:#9A6A18;
+    --warn-soft:#F7ECCE;
     --slate:#5B6472;
     --slate-light:#9aa1ac;
-    --line: rgba(27,42,74,0.13);
-    --shadow: 0 14px 34px rgba(16,27,51,0.18);
+    --line: rgba(27,42,74,0.1);
+    --line-strong: rgba(27,42,74,0.2);
+    --shadow-sm: 0 2px 8px rgba(16,27,51,0.07);
+    --shadow: 0 8px 28px rgba(16,27,51,0.13);
+    --shadow-lg: 0 20px 50px rgba(16,27,51,0.2);
+    --radius-sm:10px;
+    --radius:16px;
+    --radius-lg:22px;
   }
   *{ box-sizing:border-box; }
   body{
     margin:0;
     background:var(--paper);
-    background-image: radial-gradient(circle at 1px 1px, rgba(27,42,74,0.045) 1px, transparent 0);
-    background-size: 22px 22px;
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(27,42,74,0.04) 1px, transparent 0);
+    background-size:24px 24px;
     color:var(--ink);
     font-family:'Inter',sans-serif;
+    min-height:100vh;
   }
   .hidden{ display:none !important; }
   .hidden-file{ display:none; }
   .muted{ color:var(--slate); font-size:.88rem; }
   .small{ font-size:.78rem; }
   .mono{ font-family:'Space Mono',monospace; }
-  .error{ color:var(--danger); font-size:.82rem; margin-top:8px; }
+  .error{ color:var(--danger); font-size:.83rem; margin-top:8px; display:flex; align-items:center; gap:6px; }
+  .error::before{ content:'⚠'; font-size:.9rem; }
 
-  button, input, label{ font-family:'Inter',sans-serif; }
+  button, input, label, select{ font-family:'Inter',sans-serif; }
   button{ cursor:pointer; }
-  button:focus-visible, input:focus-visible, label:focus-within{ outline:3px solid var(--gold); outline-offset:2px; }
+  button:focus-visible, input:focus-visible{ outline:3px solid var(--gold); outline-offset:2px; border-radius:4px; }
 
-  .app{ max-width:1080px; margin:0 auto; padding:28px 22px 60px; }
+  .app{ max-width:1100px; margin:0 auto; padding:28px 20px 72px; }
 
-  /* ---------- header ---------- */
+  /* ---------- TOPBAR ---------- */
   .topbar{
-    display:flex; justify-content:space-between; align-items:flex-end;
-    gap:24px; padding-bottom:20px; border-bottom:2px solid var(--ink);
-    margin-bottom:30px; flex-wrap:wrap;
+    display:flex; justify-content:space-between; align-items:center;
+    gap:20px; padding:16px 24px; margin-bottom:28px;
+    background:var(--ink); border-radius:var(--radius-lg);
+    box-shadow:var(--shadow-lg); flex-wrap:wrap;
   }
   .brand{ display:flex; gap:14px; align-items:center; }
-  .crest{ width:46px; height:46px; flex-shrink:0; }
+  .crest{ width:44px; height:44px; flex-shrink:0; filter:drop-shadow(0 2px 6px rgba(0,0,0,0.4)); }
+  .brand-text{ display:flex; flex-direction:column; gap:2px; }
   .brand-input{
-    font-family:'Fraunces',serif; font-weight:700; font-size:1.5rem;
-    border:none; background:transparent; color:var(--ink);
-    padding:2px 0; border-bottom:2px solid transparent; min-width:220px;
+    font-family:'Fraunces',serif; font-weight:700; font-size:1.3rem;
+    border:none; background:transparent; color:#fff;
+    padding:2px 0; border-bottom:2px solid transparent; min-width:200px;
+    letter-spacing:-.01em;
   }
-  .brand-input:hover{ border-bottom-color:var(--line); }
+  .brand-input::placeholder{ color:rgba(255,255,255,.35); }
+  .brand-input:hover{ border-bottom-color:rgba(200,160,75,.5); }
   .brand-input:focus{ outline:none; border-bottom-color:var(--gold); }
-  .subtitle{ margin:2px 0 0; font-size:.76rem; text-transform:uppercase; letter-spacing:.1em; color:var(--slate); }
+  .subtitle{ margin:0; font-size:.68rem; text-transform:uppercase; letter-spacing:.12em; color:rgba(200,160,75,.75); }
 
-  .tabs{ display:flex; gap:8px; }
+  .tabs{ display:flex; gap:6px; background:rgba(255,255,255,.07); padding:6px; border-radius:14px; }
   .tab-btn{
-    border:none; background:var(--paper-dim); color:var(--slate);
-    font-weight:600; font-size:.85rem; padding:11px 18px;
-    border-radius:12px 12px 0 0; transition:background .15s,color .15s;
+    border:none; background:transparent; color:rgba(255,255,255,.55);
+    font-weight:600; font-size:.82rem; padding:9px 16px;
+    border-radius:10px; transition:all .18s; display:flex; align-items:center; gap:7px; white-space:nowrap;
   }
-  .tab-btn.active{ background:var(--ink); color:#fff; }
-  .tab-btn:not(.active):hover{ background:var(--gold-soft); color:var(--ink); }
+  .tab-btn .tab-icon{ font-size:1rem; }
+  .tab-btn.active{ background:#fff; color:var(--ink); box-shadow:0 2px 8px rgba(0,0,0,.18); }
+  .tab-btn:not(.active):hover{ background:rgba(255,255,255,.12); color:#fff; }
 
-  /* ---------- generic cards ---------- */
+  /* ---------- SECTION HEADERS ---------- */
+  .section-header{
+    display:flex; justify-content:space-between; align-items:center;
+    margin-bottom:22px; flex-wrap:wrap; gap:12px;
+  }
+  .section-title{ font-family:'Fraunces',serif; font-size:1.6rem; font-weight:700; margin:0; }
+  .section-sub{ font-size:.82rem; color:var(--slate); margin:4px 0 0; }
+
+  /* ---------- CARDS ---------- */
   .card{
-    background:#fff; border:1px solid var(--line); border-radius:18px;
-    padding:28px; margin-bottom:24px; box-shadow:0 2px 12px rgba(16,27,51,0.05);
+    background:var(--paper-bright); border:1px solid var(--line); border-radius:var(--radius-lg);
+    padding:28px; margin-bottom:20px; box-shadow:var(--shadow-sm);
+    transition:box-shadow .2s;
   }
-  .card h2{ font-family:'Fraunces',serif; font-size:1.35rem; margin:0 0 6px; }
-  .card h3{ font-family:'Fraunces',serif; font-size:1.1rem; margin:0 0 14px; }
-  .centered-card{ max-width:480px; margin:0 auto; text-align:center; }
+  .card:hover{ box-shadow:var(--shadow); }
+  .card h2{ font-family:'Fraunces',serif; font-size:1.3rem; margin:0 0 6px; }
+  .card h3{ font-family:'Fraunces',serif; font-size:1.1rem; margin:0 0 16px; color:var(--ink); }
+  .centered-card{ max-width:500px; margin:0 auto; }
 
+  /* ---------- BUTTONS ---------- */
   .btn-primary{
-    background:var(--ink); color:#fff; border:none; padding:11px 24px;
-    border-radius:999px; font-weight:600; font-size:.85rem;
-    transition:transform .12s, background .12s;
+    background:var(--ink); color:#fff; border:none; padding:11px 22px;
+    border-radius:999px; font-weight:600; font-size:.84rem; letter-spacing:.01em;
+    transition:background .15s, transform .1s, box-shadow .15s;
+    box-shadow:0 2px 8px rgba(27,42,74,.3);
   }
-  .btn-primary:hover{ background:var(--ink-deep); }
+  .btn-primary:hover{ background:var(--ink-deep); box-shadow:0 4px 14px rgba(27,42,74,.35); }
   .btn-primary:active{ transform:scale(.97); }
+  .btn-primary:disabled{ background:var(--slate-light); cursor:not-allowed; box-shadow:none; }
+
   .btn-secondary{
-    background:transparent; color:var(--ink); border:2px solid var(--ink);
-    padding:9px 20px; border-radius:999px; font-weight:600; font-size:.85rem;
+    background:transparent; color:var(--ink); border:2px solid var(--line-strong);
+    padding:9px 20px; border-radius:999px; font-weight:600; font-size:.84rem;
+    transition:all .15s;
   }
-  .btn-secondary:hover{ background:var(--ink); color:#fff; }
+  .btn-secondary:hover{ background:var(--ink); color:#fff; border-color:var(--ink); }
+
+  .btn-gold{
+    background:linear-gradient(135deg,var(--gold),var(--gold-soft)); color:var(--ink-deep);
+    border:none; padding:11px 22px; border-radius:999px; font-weight:700; font-size:.84rem;
+    box-shadow:0 2px 10px rgba(200,160,75,.35); transition:all .15s;
+  }
+  .btn-gold:hover{ box-shadow:0 4px 18px rgba(200,160,75,.5); transform:translateY(-1px); }
+
   .link-btn{
-    background:none; border:none; color:var(--slate); font-size:.78rem;
-    text-decoration:underline; padding:4px 0;
+    background:none; border:none; color:var(--slate); font-size:.8rem;
+    text-decoration:underline; padding:5px 2px; transition:color .12s;
   }
   .link-btn:hover{ color:var(--ink); }
 
-  /* ---------- secretaria gate ---------- */
-  .gate-card{
-    max-width:360px; margin:40px auto; text-align:center;
-    background:var(--paper-dim); border-radius:18px; padding:38px 28px; box-shadow:var(--shadow);
+  .btn-icon{
+    background:none; border:none; color:var(--slate); font-size:.85rem;
+    padding:5px 8px; border-radius:8px; transition:all .12s; display:inline-flex; align-items:center; gap:5px;
   }
-  .gate-icon{ font-size:2.1rem; margin-bottom:6px; }
+  .btn-icon:hover{ background:var(--paper-dim); color:var(--ink); }
+  .btn-icon.danger:hover{ background:var(--danger-soft); color:var(--danger); }
+
+  /* ---------- GATE (secretaria login) ---------- */
+  .gate-wrap{
+    min-height:65vh; display:flex; align-items:center; justify-content:center; padding:20px;
+  }
+  .gate-card{
+    width:100%; max-width:380px; text-align:center;
+    background:var(--paper-bright); border:1px solid var(--line); border-radius:var(--radius-lg);
+    padding:44px 36px 36px; box-shadow:var(--shadow-lg);
+  }
+  .gate-badge{
+    width:68px; height:68px; border-radius:50%; background:linear-gradient(135deg,var(--ink),var(--ink-mid));
+    display:flex; align-items:center; justify-content:center; margin:0 auto 20px;
+    font-size:1.7rem; box-shadow:0 6px 20px rgba(27,42,74,.3);
+  }
+  .gate-card h2{ font-family:'Fraunces',serif; font-size:1.45rem; margin:0 0 6px; }
+  .gate-card p{ color:var(--slate); font-size:.88rem; margin:0 0 24px; line-height:1.5; }
+  .pin-group{ position:relative; width:160px; margin:0 auto 16px; }
   .pin-input{
-    display:block; width:150px; margin:18px auto 12px; text-align:center;
-    font-family:'Space Mono',monospace; font-size:1.4rem; letter-spacing:.35em;
-    padding:8px 4px; border:none; border-bottom:3px solid var(--ink); background:transparent;
+    display:block; width:100%; text-align:center;
+    font-family:'Space Mono',monospace; font-size:1.6rem; letter-spacing:.4em;
+    padding:10px 4px; border:none; border-bottom:3px solid var(--line-strong); background:transparent;
+    transition:border-color .15s;
   }
   .pin-input:focus{ outline:none; border-bottom-color:var(--gold); }
-  .hint{ font-size:.72rem; color:var(--slate-light); margin-top:16px; }
+  .pin-toggle{
+    position:absolute; right:-32px; top:50%; transform:translateY(-50%);
+    background:none; border:none; color:var(--slate); padding:4px; font-size:1rem; cursor:pointer;
+  }
+  .hint{ font-size:.72rem; color:var(--slate-light); margin-top:18px; line-height:1.5; }
+  .hint strong{ color:var(--slate); }
 
-  .sec-toolbar{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:18px; }
-  .sec-toolbar-actions{ display:flex; gap:16px; flex-wrap:wrap; align-items:center; }
+  /* ---------- SEC TOOLBAR ---------- */
+  .sec-toolbar{
+    display:flex; justify-content:space-between; align-items:center;
+    flex-wrap:wrap; gap:10px; margin-bottom:20px;
+    background:var(--paper-dim); border-radius:var(--radius); padding:12px 18px;
+    border:1px solid var(--line);
+  }
+  .sec-toolbar-user{ display:flex; align-items:center; gap:8px; font-size:.82rem; }
+  .sec-toolbar-user::before{ content:'🔓'; font-size:1rem; }
+  .sec-toolbar-actions{ display:flex; gap:4px; flex-wrap:wrap; align-items:center; }
+  .sec-action-btn{
+    background:none; border:1px solid var(--line); color:var(--slate); font-size:.75rem;
+    padding:6px 12px; border-radius:999px; cursor:pointer; transition:all .12s;
+    display:inline-flex; align-items:center; gap:5px;
+  }
+  .sec-action-btn:hover{ background:var(--ink); color:#fff; border-color:var(--ink); }
 
-  /* ---------- form ---------- */
-  .form-grid{ display:grid; grid-template-columns:140px 1fr; gap:26px; align-items:start; margin-bottom:6px; }
-  .photo-upload label{ display:flex; flex-direction:column; align-items:center; gap:6px; cursor:pointer; }
-  .photo-upload img{ width:96px; height:96px; border-radius:50%; object-fit:cover; border:2px dashed var(--slate-light); background:var(--paper-dim); }
-  .photo-upload span{ font-size:.7rem; color:var(--slate); text-transform:uppercase; letter-spacing:.05em; }
-  .form-fields label{ display:flex; flex-direction:column; gap:4px; font-size:.7rem; text-transform:uppercase; letter-spacing:.05em; color:var(--slate); margin-bottom:14px; }
-  .form-fields input{ font-size:.95rem; color:var(--ink); padding:8px 2px; border:none; border-bottom:2px solid var(--line); background:transparent; }
+  /* ---------- FORM ---------- */
+  .form-grid{ display:grid; grid-template-columns:120px 1fr; gap:28px; align-items:start; margin-bottom:8px; }
+  .photo-upload label{
+    display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;
+    padding:12px; border-radius:var(--radius); transition:background .15s;
+  }
+  .photo-upload label:hover{ background:var(--paper-dim); }
+  .photo-ring{
+    width:88px; height:88px; border-radius:50%; border:2px dashed var(--slate-light);
+    background:var(--paper-dim); overflow:hidden; display:flex; align-items:center; justify-content:center;
+    transition:border-color .15s;
+  }
+  .photo-upload label:hover .photo-ring{ border-color:var(--gold); }
+  .photo-ring img{ width:100%; height:100%; object-fit:cover; }
+  .photo-upload span{ font-size:.65rem; color:var(--slate); text-transform:uppercase; letter-spacing:.06em; text-align:center; }
+  .form-fields label{ display:flex; flex-direction:column; gap:5px; font-size:.68rem; text-transform:uppercase; letter-spacing:.06em; color:var(--slate); margin-bottom:16px; }
+  .form-fields input{
+    font-size:.95rem; color:var(--ink); padding:9px 2px; border:none;
+    border-bottom:2px solid var(--line); background:transparent; transition:border-color .15s;
+  }
   .form-fields input:focus{ outline:none; border-bottom-color:var(--gold); }
   .form-row2{ display:grid; grid-template-columns:1fr 1fr; gap:18px; }
-  .form-actions{ display:flex; gap:12px; margin-top:8px; }
+  .form-actions{ display:flex; gap:10px; margin-top:12px; align-items:center; flex-wrap:wrap; }
+  .save-indicator{ font-size:.75rem; color:var(--ok); display:none; align-items:center; gap:4px; }
+  .save-indicator.show{ display:flex; }
 
-  /* ---------- students table ---------- */
-  .list-head{ display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; }
-  .list-head input{ flex:1; min-width:200px; padding:9px 14px; border:1px solid var(--line); border-radius:10px; }
-  .students-table{ width:100%; border-collapse:collapse; margin-top:12px; }
-  .students-table th{ text-align:left; font-size:.66rem; text-transform:uppercase; letter-spacing:.07em; color:var(--slate); border-bottom:2px solid var(--gold); padding:9px 10px; }
-  .students-table td{ padding:10px; border-bottom:1px solid var(--line); vertical-align:middle; font-size:.9rem; }
-  .thumb{ width:36px; height:36px; border-radius:50%; object-fit:cover; }
-  .cellname{ font-weight:600; }
-  .cellsub{ font-size:.74rem; color:var(--slate); }
-  .status-pill{ border:none; border-radius:999px; padding:5px 14px; font-size:.7rem; font-weight:700; text-transform:uppercase; }
+  /* ---------- STATS BAR ---------- */
+  .stats-row{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:20px; }
+  .stat-card{
+    background:var(--paper-bright); border:1px solid var(--line); border-radius:var(--radius);
+    padding:18px 20px; display:flex; flex-direction:column; gap:4px;
+  }
+  .stat-num{ font-family:'Fraunces',serif; font-size:1.9rem; font-weight:700; line-height:1; }
+  .stat-label{ font-size:.73rem; text-transform:uppercase; letter-spacing:.07em; color:var(--slate); }
+  .stat-card.stat-ok .stat-num{ color:var(--ok); }
+  .stat-card.stat-off .stat-num{ color:var(--danger); }
+
+  /* ---------- TABLE ---------- */
+  .table-container{ overflow-x:auto; margin-top:10px; border-radius:var(--radius); border:1px solid var(--line); }
+  .students-table{ width:100%; border-collapse:collapse; }
+  .students-table th{
+    text-align:left; font-size:.65rem; text-transform:uppercase; letter-spacing:.07em;
+    color:var(--slate); padding:12px 14px; background:var(--paper-dim);
+    border-bottom:2px solid var(--gold); white-space:nowrap;
+  }
+  .students-table th:first-child{ border-radius:var(--radius) 0 0 0; }
+  .students-table th:last-child{ border-radius:0 var(--radius) 0 0; }
+  .students-table td{ padding:11px 14px; border-bottom:1px solid var(--line); vertical-align:middle; font-size:.88rem; }
+  .students-table tr:last-child td{ border-bottom:none; }
+  .students-table tbody tr{ transition:background .1s; }
+  .students-table tbody tr:hover{ background:var(--paper-dim); }
+  .thumb{ width:38px; height:38px; border-radius:50%; object-fit:cover; border:2px solid var(--line); }
+  .cellname{ font-weight:600; color:var(--ink); }
+  .cellsub{ font-size:.73rem; color:var(--slate); margin-top:2px; }
+  .status-pill{
+    border:none; border-radius:999px; padding:5px 13px; font-size:.68rem; font-weight:700;
+    text-transform:uppercase; letter-spacing:.04em; cursor:pointer; transition:all .15s;
+  }
   .status-pill.is-ok{ background:var(--ok-soft); color:var(--ok); }
+  .status-pill.is-ok:hover{ background:var(--ok); color:#fff; }
   .status-pill.is-off{ background:var(--danger-soft); color:var(--danger); }
+  .status-pill.is-off:hover{ background:var(--danger); color:#fff; }
   .rowactions{ white-space:nowrap; }
-  .icon-btn{ background:none; border:none; font-size:1rem; padding:5px 9px; border-radius:8px; }
-  .icon-btn:hover{ background:var(--paper-dim); }
-  .icon-btn.danger:hover{ background:var(--danger-soft); }
 
-  /* ---------- carteirinha / id card ---------- */
-  .search-bar{ display:flex; gap:10px; margin:18px 0; }
-  .search-bar input{ flex:1; padding:11px 14px; border:1px solid var(--line); border-radius:10px; font-size:.95rem; }
-  .notfound{ color:var(--slate); font-style:italic; padding:24px 10px; }
+  /* ---------- SEARCH / FILTER BAR ---------- */
+  .list-controls{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .search-wrap{ position:relative; flex:1; min-width:220px; }
+  .search-wrap svg{ position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--slate-light); pointer-events:none; }
+  .search-wrap input{
+    width:100%; padding:10px 14px 10px 38px; border:1px solid var(--line);
+    border-radius:var(--radius-sm); background:var(--paper-bright); color:var(--ink); font-size:.88rem;
+    transition:border-color .15s;
+  }
+  .search-wrap input:focus{ outline:none; border-color:var(--gold); }
+  .filter-select{
+    padding:10px 14px; border:1px solid var(--line); border-radius:var(--radius-sm);
+    background:var(--paper-bright); color:var(--ink); font-size:.85rem; cursor:pointer;
+  }
+
+  /* ---------- EMPTY STATE ---------- */
+  .empty-state{ text-align:center; padding:50px 20px; color:var(--slate); }
+  .empty-state .empty-icon{ font-size:2.5rem; margin-bottom:12px; opacity:.5; }
+  .empty-state p{ font-size:.9rem; margin:0; line-height:1.5; }
+  .empty-state strong{ color:var(--ink); }
+
+  /* ---------- ID CARD ---------- */
+  .card-result{ margin-top:16px; }
+  .notfound{ color:var(--slate); font-style:italic; padding:28px; text-align:center; background:var(--paper-dim); border-radius:var(--radius); }
 
   .idcard{
-    width:320px; min-height:470px; border-radius:20px; margin:6px auto 18px;
-    background:linear-gradient(160deg, var(--ink) 0%, var(--ink-deep) 100%);
-    position:relative; overflow:hidden; color:#fff; box-shadow:var(--shadow);
+    width:320px; min-height:490px; border-radius:22px; margin:0 auto 20px;
+    background:linear-gradient(155deg, var(--ink-mid) 0%, var(--ink-deep) 55%, #0a1122 100%);
+    position:relative; overflow:hidden; color:#fff;
+    box-shadow: 0 25px 60px rgba(16,27,51,.5), inset 0 1px 0 rgba(255,255,255,.08);
   }
   .idcard::before{
     content:''; position:absolute; inset:0;
-    background-image:repeating-linear-gradient(135deg, rgba(255,255,255,0.035) 0 2px, transparent 2px 14px);
+    background-image:repeating-linear-gradient(130deg, rgba(255,255,255,.025) 0 1px, transparent 1px 16px);
     pointer-events:none;
   }
-  .idcard-stripe{ height:10px; background:linear-gradient(90deg,var(--gold),var(--gold-soft),var(--gold)); position:relative; z-index:1; }
-  .idcard-head{ padding:18px 22px 4px; position:relative; z-index:1; }
-  .idcard-school{ font-family:'Fraunces',serif; font-weight:700; font-size:1.05rem; line-height:1.2; }
-  .idcard-doctype{ font-size:.65rem; text-transform:uppercase; letter-spacing:.13em; color:var(--gold-soft); margin-top:4px; }
-  .idcard-body{ display:flex; flex-direction:column; align-items:center; padding:14px 24px 4px; gap:14px; position:relative; z-index:1; }
-  .idcard-photo{ width:118px; height:118px; border-radius:50%; object-fit:cover; border:3px solid var(--gold); background:#fff; }
+  .idcard::after{
+    content:''; position:absolute; bottom:-60px; right:-60px;
+    width:200px; height:200px; border-radius:50%;
+    background:radial-gradient(circle, rgba(200,160,75,.15) 0%, transparent 70%);
+    pointer-events:none;
+  }
+  .idcard-stripe{ height:8px; background:linear-gradient(90deg,var(--gold-soft),var(--gold),var(--gold-soft)); position:relative; z-index:1; }
+  .idcard-head{ padding:20px 22px 6px; position:relative; z-index:1; display:flex; justify-content:space-between; align-items:flex-start; }
+  .idcard-head-left{}
+  .idcard-school{ font-family:'Fraunces',serif; font-weight:700; font-size:1rem; line-height:1.25; letter-spacing:-.01em; }
+  .idcard-doctype{ font-size:.6rem; text-transform:uppercase; letter-spacing:.15em; color:var(--gold-soft); margin-top:4px; opacity:.8; }
+  .idcard-year{ font-family:'Space Mono',monospace; font-size:.65rem; color:rgba(255,255,255,.3); }
+  .idcard-body{ display:flex; flex-direction:column; align-items:center; padding:12px 24px 6px; gap:14px; position:relative; z-index:1; }
+  .idcard-photo{
+    width:110px; height:110px; border-radius:50%; object-fit:cover;
+    border:3px solid var(--gold); background:var(--ink-deep);
+    box-shadow:0 6px 24px rgba(0,0,0,.4);
+  }
   .idcard-info{ width:100%; }
-  .idcard-name{ font-family:'Fraunces',serif; font-weight:600; font-size:1.12rem; text-align:center; margin-bottom:10px; }
-  .idcard-row{ display:flex; justify-content:space-between; align-items:center; font-size:.78rem; padding:7px 0; border-bottom:1px solid rgba(255,255,255,0.14); }
-  .idcard-row span{ color:rgba(255,255,255,.55); text-transform:uppercase; letter-spacing:.06em; font-size:.62rem; }
-  .idcard-foot{ display:flex; align-items:center; justify-content:space-between; padding:16px 22px 22px; position:relative; z-index:1; }
-  #qrCanvas{ background:#fff; border-radius:6px; padding:4px; display:block; }
-  .idcard-stamp{ font-family:'Space Mono',monospace; text-transform:uppercase; font-weight:700; font-size:.82rem; letter-spacing:.08em; border:2px dashed; padding:6px 14px; border-radius:6px; transform:rotate(-9deg); }
-  .stamp-ok{ color:#6CD6A8; border-color:#6CD6A8; }
+  .idcard-name{ font-family:'Fraunces',serif; font-weight:600; font-size:1.08rem; text-align:center; margin-bottom:12px; line-height:1.25; }
+  .idcard-row{ display:flex; justify-content:space-between; align-items:center; font-size:.77rem; padding:7px 0; border-bottom:1px solid rgba(255,255,255,.1); }
+  .idcard-row:last-child{ border-bottom:none; }
+  .idcard-row span{ color:rgba(255,255,255,.45); text-transform:uppercase; letter-spacing:.07em; font-size:.6rem; }
+  .idcard-foot{ display:flex; align-items:center; justify-content:space-between; padding:14px 22px 22px; position:relative; z-index:1; }
+  #qrCanvas{ background:#fff; border-radius:8px; padding:5px; display:block; box-shadow:0 2px 8px rgba(0,0,0,.3); }
+  .idcard-stamp{
+    font-family:'Space Mono',monospace; text-transform:uppercase; font-weight:700;
+    font-size:.78rem; letter-spacing:.1em; border:2px dashed; padding:7px 14px;
+    border-radius:6px; transform:rotate(-10deg); position:relative;
+  }
+  .stamp-ok{ color:#7DE2B2; border-color:#7DE2B2; text-shadow:0 0 12px rgba(125,226,178,.4); }
   .stamp-off{ color:#E89A9A; border-color:#E89A9A; }
 
-  /* ---------- portaria ---------- */
-  .scan-area{ margin-top:8px; }
-  .scan-wrap{ position:relative; width:240px; height:240px; margin:14px auto; border-radius:16px; overflow:hidden; background:#000; }
+  .card-actions{ display:flex; justify-content:center; gap:10px; margin-top:4px; }
+
+  /* ---------- PORTARIA ---------- */
+  .scan-area{ text-align:center; margin:16px 0; }
+  .scan-wrap{
+    position:relative; width:260px; height:260px; margin:16px auto;
+    border-radius:20px; overflow:hidden; background:#000;
+    box-shadow:0 8px 32px rgba(0,0,0,.4);
+  }
   .scan-wrap video{ width:100%; height:100%; object-fit:cover; }
-  .corner{ position:absolute; width:26px; height:26px; }
-  .corner-tl{ top:8px; left:8px; border-top:3px solid var(--gold); border-left:3px solid var(--gold); border-radius:5px 0 0 0; }
-  .corner-tr{ top:8px; right:8px; border-top:3px solid var(--gold); border-right:3px solid var(--gold); border-radius:0 5px 0 0; }
-  .corner-bl{ bottom:8px; left:8px; border-bottom:3px solid var(--gold); border-left:3px solid var(--gold); border-radius:0 0 0 5px; }
-  .corner-br{ bottom:8px; right:8px; border-bottom:3px solid var(--gold); border-right:3px solid var(--gold); border-radius:0 0 5px 0; }
+  .corner{ position:absolute; width:28px; height:28px; }
+  .corner-tl{ top:10px; left:10px; border-top:3px solid var(--gold); border-left:3px solid var(--gold); border-radius:6px 0 0 0; }
+  .corner-tr{ top:10px; right:10px; border-top:3px solid var(--gold); border-right:3px solid var(--gold); border-radius:0 6px 0 0; }
+  .corner-bl{ bottom:10px; left:10px; border-bottom:3px solid var(--gold); border-left:3px solid var(--gold); border-radius:0 0 0 6px; }
+  .corner-br{ bottom:10px; right:10px; border-bottom:3px solid var(--gold); border-right:3px solid var(--gold); border-radius:0 0 6px 0; }
+  .scan-line{
+    position:absolute; left:10px; right:10px; height:2px;
+    background:linear-gradient(90deg,transparent,var(--gold),transparent);
+    animation:scanMove 2s linear infinite; border-radius:2px;
+  }
+  @keyframes scanMove{
+    0%{ top:10%; }
+    50%{ top:85%; }
+    100%{ top:10%; }
+  }
 
-  .verify-panel{ border-radius:18px; padding:34px 24px; text-align:center; min-height:170px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; margin-top:20px; }
-  .verify-panel.idle{ background:var(--paper-dim); color:var(--slate); }
-  .verify-panel.is-ok{ background:var(--ok-soft); color:var(--ok); }
-  .verify-panel.is-off{ background:var(--danger-soft); color:var(--danger); }
-  .verify-panel.is-warn{ background:var(--warn-soft); color:var(--warn); }
-  .verify-icon{ font-size:2.5rem; }
-  .verify-title{ font-family:'Fraunces',serif; font-weight:700; font-size:1.35rem; }
-  .verify-sub{ font-size:.85rem; }
-  .verify-student{ display:flex; gap:12px; align-items:center; background:rgba(255,255,255,.65); padding:10px 16px; border-radius:12px; margin-top:6px; color:var(--ink); text-align:left; }
-  .verify-student img{ width:50px; height:50px; border-radius:50%; object-fit:cover; }
+  .portaria-divider{ display:flex; align-items:center; gap:12px; margin:18px 0; color:var(--slate-light); font-size:.75rem; }
+  .portaria-divider::before,.portaria-divider::after{ content:''; flex:1; height:1px; background:var(--line); }
 
-  .log-section{ margin-top:30px; text-align:left; }
-  .log-section h3{ font-family:'Fraunces',serif; font-size:1rem; margin-bottom:10px; }
-  .logrow{ display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--line); font-size:.85rem; }
-  .logdot{ width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+  .search-bar{ display:flex; gap:8px; }
+  .search-bar input{
+    flex:1; padding:11px 14px; border:1px solid var(--line); border-radius:var(--radius-sm);
+    font-size:.92rem; background:var(--paper-bright); transition:border-color .15s;
+  }
+  .search-bar input:focus{ outline:none; border-color:var(--gold); }
+
+  .verify-panel{
+    border-radius:var(--radius-lg); padding:32px 24px; text-align:center;
+    min-height:160px; display:flex; flex-direction:column; align-items:center;
+    justify-content:center; gap:10px; margin-top:18px; transition:all .25s;
+  }
+  .verify-panel.idle{ background:var(--paper-dim); color:var(--slate); border:1px solid var(--line); }
+  .verify-panel.is-ok{ background:var(--ok-soft); color:var(--ok); border:1px solid var(--ok-ring); }
+  .verify-panel.is-off{ background:var(--danger-soft); color:var(--danger); border:1px solid rgba(168,48,48,.2); }
+  .verify-panel.is-warn{ background:var(--warn-soft); color:var(--warn); border:1px solid rgba(154,106,24,.25); }
+  .verify-icon{ font-size:2.6rem; line-height:1; }
+  .verify-title{ font-family:'Fraunces',serif; font-weight:700; font-size:1.3rem; margin:0; }
+  .verify-sub{ font-size:.85rem; margin:0; opacity:.8; }
+  .verify-student{
+    display:flex; gap:12px; align-items:center;
+    background:rgba(255,255,255,.75); backdrop-filter:blur(4px);
+    padding:12px 18px; border-radius:14px; margin-top:4px; color:var(--ink); text-align:left;
+    box-shadow:var(--shadow-sm);
+  }
+  .verify-student img{ width:50px; height:50px; border-radius:50%; object-fit:cover; border:2px solid var(--line); }
+
+  /* ---------- LOG ---------- */
+  .log-section{ margin-top:28px; }
+  .log-header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+  .log-header h3{ font-family:'Fraunces',serif; font-size:1rem; margin:0; }
+  .log-clear{ font-size:.72rem; }
+  .logrow{
+    display:flex; align-items:center; gap:10px; padding:10px 12px;
+    border-radius:10px; font-size:.84rem; transition:background .1s;
+    border:1px solid transparent;
+  }
+  .logrow:hover{ background:var(--paper-dim); border-color:var(--line); }
+  .logdot{ width:8px; height:8px; border-radius:50%; flex-shrink:0; }
   .logdot.is-ok{ background:var(--ok); }
   .logdot.is-off{ background:var(--danger); }
   .logdot.is-warn{ background:var(--warn); }
-  .logtime{ color:var(--slate); width:64px; }
-  .logname{ flex:1; text-align:left; font-weight:500; }
-  .logstatus.is-ok{ color:var(--ok); }
-  .logstatus.is-off{ color:var(--danger); }
-  .logstatus.is-warn{ color:var(--warn); }
+  .logtime{ color:var(--slate); min-width:60px; font-size:.78rem; }
+  .logname{ flex:1; font-weight:500; }
+  .logstatus{ font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.04em; padding:3px 10px; border-radius:999px; }
+  .logstatus.is-ok{ background:var(--ok-soft); color:var(--ok); }
+  .logstatus.is-off{ background:var(--danger-soft); color:var(--danger); }
+  .logstatus.is-warn{ background:var(--warn-soft); color:var(--warn); }
 
-  .appfoot{ text-align:center; color:var(--slate-light); font-size:.74rem; padding:24px 10px; max-width:600px; margin:0 auto; line-height:1.5; }
+  /* ---------- TOAST ---------- */
+  .toast{
+    position:fixed; bottom:24px; right:24px; z-index:999;
+    background:var(--ink); color:#fff; padding:12px 20px;
+    border-radius:12px; font-size:.84rem; font-weight:500;
+    box-shadow:var(--shadow-lg); transform:translateY(80px); opacity:0;
+    transition:all .3s cubic-bezier(.34,1.56,.64,1);
+    display:flex; align-items:center; gap:8px; max-width:300px;
+  }
+  .toast.show{ transform:translateY(0); opacity:1; }
+  .toast.toast-ok{ background:var(--ok); }
+  .toast.toast-err{ background:var(--danger); }
 
+  /* ---------- MODAL ---------- */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(16,27,51,.55); z-index:998;
+    display:flex; align-items:center; justify-content:center; padding:20px;
+    opacity:0; pointer-events:none; transition:opacity .2s;
+    backdrop-filter:blur(3px);
+  }
+  .modal-overlay.open{ opacity:1; pointer-events:auto; }
+  .modal{
+    background:var(--paper-bright); border-radius:var(--radius-lg); padding:32px;
+    max-width:380px; width:100%; box-shadow:var(--shadow-lg);
+    transform:scale(.95); transition:transform .2s;
+  }
+  .modal-overlay.open .modal{ transform:scale(1); }
+  .modal h3{ font-family:'Fraunces',serif; font-size:1.2rem; margin:0 0 8px; }
+  .modal p{ font-size:.88rem; color:var(--slate); margin:0 0 20px; }
+  .modal input{ width:100%; font-size:.95rem; padding:10px; border:1px solid var(--line); border-radius:10px; margin-bottom:16px; }
+  .modal input:focus{ outline:none; border-color:var(--gold); }
+  .modal-actions{ display:flex; gap:10px; justify-content:flex-end; }
+
+  /* ---------- FOOTER ---------- */
+  .appfoot{
+    text-align:center; color:var(--slate-light); font-size:.72rem;
+    padding:28px 10px; max-width:600px; margin:0 auto; line-height:1.6;
+  }
+  .appfoot a{ color:var(--slate); }
+
+  /* ---------- RESPONSIVE ---------- */
   @media (max-width:680px){
     .form-grid{ grid-template-columns:1fr; }
     .form-row2{ grid-template-columns:1fr; }
-    .topbar{ flex-direction:column; align-items:flex-start; gap:14px; }
-    .tabs{ width:100%; }
-    .tab-btn{ flex:1; text-align:center; }
-    .idcard{ width:100%; }
+    .topbar{ border-radius:var(--radius); padding:14px 16px; }
+    .tabs{ width:100%; overflow-x:auto; }
+    .tab-btn{ flex:1; text-align:center; justify-content:center; font-size:.75rem; padding:8px 10px; }
+    .idcard{ width:100%; max-width:320px; }
+    .stats-row{ grid-template-columns:repeat(3,1fr); gap:10px; }
+    .stat-num{ font-size:1.5rem; }
+    .section-title{ font-size:1.3rem; }
+    .card{ padding:20px; }
+    .gate-card{ padding:32px 22px 28px; }
   }
-  @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
+
+  @media (prefers-reduced-motion: reduce){ *{ transition:none !important; animation:none !important; } }
 
   @media print{
     body *{ visibility:hidden; }
@@ -238,18 +480,18 @@
   <header class="topbar">
     <div class="brand">
       <svg class="crest" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M24 4 L42 11 V24c0 12-8 18-18 20C14 42 6 36 6 24V11 Z" fill="#1B2A4A" stroke="#C8A04B" stroke-width="2"/>
+        <path d="M24 4 L42 11 V24c0 12-8 18-18 20C14 42 6 36 6 24V11 Z" fill="rgba(255,255,255,0.1)" stroke="#C8A04B" stroke-width="2"/>
         <path d="M24 14 l4 8 9 1-7 6 2 9-8-5-8 5 2-9-7-6 9-1z" fill="#C8A04B"/>
       </svg>
-      <div>
-        <input id="escolaNomeInput" class="brand-input" oninput="state.escolaNome=this.value; saveState();" aria-label="Nome da escola">
+      <div class="brand-text">
+        <input id="escolaNomeInput" class="brand-input" oninput="state.escolaNome=this.value; saveState();" aria-label="Nome da escola" placeholder="Nome da escola">
         <p class="subtitle">Sistema de carteirinha digital</p>
       </div>
     </div>
     <nav class="tabs">
-      <button class="tab-btn active" data-tab="secretaria" onclick="showTab('secretaria')">🏫 Secretaria</button>
-      <button class="tab-btn" data-tab="carteirinha" onclick="showTab('carteirinha')">🪪 Carteirinha</button>
-      <button class="tab-btn" data-tab="portaria" onclick="showTab('portaria')">🚪 Portaria</button>
+      <button class="tab-btn active" data-tab="secretaria" onclick="showTab('secretaria')"><span class="tab-icon">🏫</span> Secretaria</button>
+      <button class="tab-btn" data-tab="carteirinha" onclick="showTab('carteirinha')"><span class="tab-icon">🪪</span> Carteirinha</button>
+      <button class="tab-btn" data-tab="portaria" onclick="showTab('portaria')"><span class="tab-icon">🚪</span> Portaria</button>
     </nav>
   </header>
 
@@ -258,24 +500,45 @@
     <!-- ===================== SECRETARIA ===================== -->
     <section class="tab-panel" data-tab="secretaria" id="panelSecretaria">
 
-      <div id="secGate" class="gate-card">
-        <div class="gate-icon">🔒</div>
-        <h2 style="margin:0;font-family:'Fraunces',serif;">Acesso da secretaria</h2>
-        <p class="muted">Digite o PIN para cadastrar e gerenciar os alunos.</p>
-        <input id="pinInput" class="pin-input" type="password" inputmode="numeric" maxlength="6" placeholder="••••" onkeydown="if(event.key==='Enter') tryLoginSec()">
-        <button class="btn-primary" onclick="tryLoginSec()">Entrar</button>
-        <p id="pinError" class="error hidden">PIN incorreto. Tente novamente.</p>
-        <p class="hint">PIN padrão: 1234 — altere em "Alterar PIN" depois de entrar.</p>
+      <div id="secGate" class="gate-wrap">
+        <div class="gate-card">
+          <div class="gate-badge">🔒</div>
+          <h2>Acesso restrito</h2>
+          <p>Digite o PIN da secretaria para cadastrar e gerenciar os alunos.</p>
+          <div class="pin-group">
+            <input id="pinInput" class="pin-input" type="password" inputmode="numeric" maxlength="6" placeholder="••••" onkeydown="if(event.key==='Enter') tryLoginSec()">
+            <button class="pin-toggle" onclick="togglePinVisibility()" title="Mostrar/ocultar PIN" type="button">👁</button>
+          </div>
+          <button class="btn-gold" onclick="tryLoginSec()" style="width:100%;">Entrar na secretaria</button>
+          <p id="pinError" class="error hidden" style="justify-content:center;">PIN incorreto. Tente novamente.</p>
+          <p class="hint">PIN padrão: <strong>1234</strong><br>Altere em "Mudar PIN" após entrar.</p>
+        </div>
       </div>
 
       <div id="secPanel" class="hidden">
         <div class="sec-toolbar">
-          <button class="link-btn" onclick="logoutSec()">Sair da secretaria</button>
+          <div class="sec-toolbar-user">Secretaria ativa</div>
           <div class="sec-toolbar-actions">
-            <button class="link-btn" onclick="changePin()">Alterar PIN</button>
-            <button class="link-btn" onclick="exportarBackup()">Exportar backup</button>
-            <label class="link-btn">Importar backup<input type="file" accept="application/json" class="hidden-file" onchange="importarBackup(event)"></label>
-            <button class="link-btn" onclick="carregarExemplo()">Carregar exemplo</button>
+            <button class="sec-action-btn" onclick="openChangePinModal()">🔑 Mudar PIN</button>
+            <button class="sec-action-btn" onclick="exportarBackup()">📥 Exportar backup</button>
+            <label class="sec-action-btn">📤 Importar backup<input type="file" accept="application/json" class="hidden-file" onchange="importarBackup(event)"></label>
+            <button class="sec-action-btn" onclick="carregarExemplo()">✨ Carregar exemplo</button>
+            <button class="sec-action-btn" style="color:var(--danger);" onclick="logoutSec()">🚪 Sair</button>
+          </div>
+        </div>
+
+        <div id="statsRow" class="stats-row">
+          <div class="stat-card">
+            <span class="stat-num" id="statTotal">0</span>
+            <span class="stat-label">Alunos cadastrados</span>
+          </div>
+          <div class="stat-card stat-ok">
+            <span class="stat-num" id="statAtivos">0</span>
+            <span class="stat-label">Ativos</span>
+          </div>
+          <div class="stat-card stat-off">
+            <span class="stat-num" id="statInativos">0</span>
+            <span class="stat-label">Inativos</span>
           </div>
         </div>
 
@@ -284,13 +547,13 @@
           <div class="form-grid">
             <div class="photo-upload">
               <label for="fotoInput">
-                <img id="fotoPreview" src="" alt="Foto do aluno">
-                <span>Adicionar foto</span>
+                <div class="photo-ring"><img id="fotoPreview" src="" alt="Foto do aluno"></div>
+                <span>Clique para<br>adicionar foto</span>
               </label>
               <input id="fotoInput" type="file" accept="image/*" class="hidden-file" onchange="onFotoChange(event)">
             </div>
             <div class="form-fields">
-              <label>Nome completo<input id="inputNome" type="text" placeholder="Nome do aluno"></label>
+              <label>Nome completo<input id="inputNome" type="text" placeholder="Ex: Ana Lima Santos"></label>
               <div class="form-row2">
                 <label>Matrícula / RA<input id="inputMatricula" type="text" placeholder="Ex: 2026001"></label>
                 <label>Turma<input id="inputTurma" type="text" placeholder="Ex: 9º Ano A"></label>
@@ -302,19 +565,34 @@
           <div class="form-actions">
             <button class="btn-primary" id="btnSalvarAluno" onclick="salvarAluno()">Salvar aluno</button>
             <button class="btn-secondary hidden" id="btnCancelarEdicao" onclick="resetForm()">Cancelar edição</button>
+            <span class="save-indicator" id="saveIndicator">✓ Salvo!</span>
           </div>
         </div>
 
         <div class="card">
-          <div class="list-head">
-            <h3 style="margin:0;">Alunos cadastrados</h3>
-            <input id="searchInput" type="text" placeholder="Buscar por nome, matrícula ou turma" oninput="renderStudentsList()">
+          <div class="section-header">
+            <div>
+              <h3 style="margin:0 0 4px;">Alunos cadastrados</h3>
+            </div>
+            <div class="list-controls">
+              <div class="search-wrap">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                <input id="searchInput" type="text" placeholder="Buscar por nome, matrícula ou turma…" oninput="renderStudentsList()">
+              </div>
+              <select class="filter-select" id="filterStatus" onchange="renderStudentsList()">
+                <option value="">Todos</option>
+                <option value="ativo">Ativos</option>
+                <option value="inativo">Inativos</option>
+              </select>
+            </div>
           </div>
-          <table class="students-table">
-            <thead><tr><th></th><th>Aluno</th><th>Matrícula</th><th>Status</th><th></th></tr></thead>
-            <tbody id="studentsBody"></tbody>
-          </table>
-          <p id="studentsEmpty" class="muted hidden"></p>
+          <div class="table-container">
+            <table class="students-table">
+              <thead><tr><th></th><th>Aluno</th><th>Matrícula</th><th>Turma</th><th>Status</th><th></th></tr></thead>
+              <tbody id="studentsBody"></tbody>
+            </table>
+          </div>
+          <div id="studentsEmpty" class="empty-state hidden"></div>
         </div>
       </div>
     </section>
@@ -322,10 +600,12 @@
     <!-- ===================== CARTEIRINHA ===================== -->
     <section class="tab-panel hidden" data-tab="carteirinha" id="panelCarteirinha">
       <div class="card centered-card">
-        <h2>Minha carteirinha digital</h2>
-        <p class="muted">Digite sua matrícula para visualizar e apresentar a carteirinha na portaria.</p>
-        <div class="search-bar">
-          <input id="matriculaInputCard" type="text" placeholder="Digite sua matrícula" onkeydown="if(event.key==='Enter') buscarCarteirinha()">
+        <div class="section-header" style="justify-content:center;text-align:center;flex-direction:column;gap:6px;">
+          <h2 style="margin:0;">Minha carteirinha digital</h2>
+          <p class="muted" style="margin:0;">Digite sua matrícula para visualizar sua carteirinha</p>
+        </div>
+        <div class="search-bar" style="margin-top:16px;">
+          <input id="matriculaInputCard" type="text" placeholder="Número de matrícula" onkeydown="if(event.key==='Enter') buscarCarteirinha()">
           <button class="btn-primary" onclick="buscarCarteirinha()">Ver carteirinha</button>
         </div>
         <div id="cardResult" class="card-result"></div>
@@ -335,30 +615,41 @@
     <!-- ===================== PORTARIA ===================== -->
     <section class="tab-panel hidden" data-tab="portaria" id="panelPortaria">
       <div class="card centered-card">
-        <h2>Verificação na portaria</h2>
-        <p class="muted">Escaneie o QR code da carteirinha ou digite a matrícula do aluno.</p>
+        <div class="section-header" style="justify-content:center;text-align:center;flex-direction:column;gap:6px;">
+          <h2 style="margin:0;">Verificação na portaria</h2>
+          <p class="muted" style="margin:0;">Escaneie o QR code ou digite a matrícula do aluno</p>
+        </div>
 
         <div class="scan-area">
-          <button id="btnStartScan" class="btn-secondary" onclick="startScanner()">Escanear QR code</button>
+          <button id="btnStartScan" class="btn-secondary" onclick="startScanner()">📷 Escanear QR code</button>
           <div id="scanWrap" class="scan-wrap hidden">
             <video id="scanVideo" playsinline muted></video>
+            <span class="scan-line"></span>
             <span class="corner corner-tl"></span><span class="corner corner-tr"></span>
             <span class="corner corner-bl"></span><span class="corner corner-br"></span>
           </div>
-          <button id="btnStopScan" class="btn-secondary hidden" onclick="stopScanner()">Parar câmera</button>
+          <button id="btnStopScan" class="btn-secondary hidden" onclick="stopScanner()">⏹ Parar câmera</button>
           <canvas id="scanCanvas" class="hidden"></canvas>
-          <p id="scanStatus" class="muted small"></p>
+          <p id="scanStatus" class="muted small" style="margin-top:8px;"></p>
         </div>
 
+        <div class="portaria-divider">ou digite a matrícula</div>
+
         <div class="search-bar">
-          <input id="matriculaInputPortaria" type="text" placeholder="Ou digite a matrícula" onkeydown="handlePortariaKey(event)">
+          <input id="matriculaInputPortaria" type="text" placeholder="Número de matrícula" onkeydown="handlePortariaKey(event)">
           <button class="btn-primary" onclick="verificar(document.getElementById('matriculaInputPortaria').value)">Verificar</button>
         </div>
 
-        <div id="verifyResult" class="verify-panel idle"><p class="muted" style="margin:0;">Aguardando verificação…</p></div>
+        <div id="verifyResult" class="verify-panel idle">
+          <div class="verify-icon">🔍</div>
+          <p class="muted" style="margin:0;">Aguardando verificação…</p>
+        </div>
 
         <div class="log-section">
-          <h3>Últimas verificações</h3>
+          <div class="log-header">
+            <h3>Registro de acessos</h3>
+            <button class="link-btn log-clear" onclick="clearLog()">Limpar registro</button>
+          </div>
           <div id="logList"></div>
         </div>
       </div>
@@ -367,8 +658,27 @@
   </main>
 
   <footer class="appfoot">
-    <p>Os dados ficam salvos apenas neste navegador (armazenamento local). Use "Exportar backup" na secretaria para guardar uma cópia ou transferir os cadastros para outro computador.</p>
+    <p>Os dados ficam salvos apenas neste navegador. Use "Exportar backup" na secretaria para guardar uma cópia ou transferir para outro computador.</p>
   </footer>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- MODAL: Mudar PIN -->
+<div class="modal-overlay" id="pinModal" onclick="if(event.target===this) closePinModal()">
+  <div class="modal">
+    <h3>🔑 Mudar PIN</h3>
+    <p>Digite o PIN atual e escolha um novo PIN de 4 a 6 dígitos.</p>
+    <input type="password" inputmode="numeric" maxlength="6" id="modalPinAtual" placeholder="PIN atual">
+    <input type="password" inputmode="numeric" maxlength="6" id="modalPinNovo" placeholder="Novo PIN (4–6 dígitos)">
+    <input type="password" inputmode="numeric" maxlength="6" id="modalPinConfirm" placeholder="Confirme o novo PIN">
+    <p id="modalPinErr" class="error hidden"></p>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closePinModal()">Cancelar</button>
+      <button class="btn-primary" onclick="confirmarMudancaPin()">Salvar PIN</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -379,7 +689,7 @@
   const PIN_KEY = 'carteirinha_escola_pin_v1';
   const AVATAR_PLACEHOLDER = 'data:image/svg+xml;utf8,' + encodeURIComponent(
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">'+
-    '<rect width="100" height="100" fill="#ECE7D8"/>'+
+    '<rect width="100" height="100" fill="#EDE8D8"/>'+
     '<circle cx="50" cy="38" r="18" fill="#B9AE92"/>'+
     '<path d="M50 60c-22 0-34 14-34 30v10h68v-10c0-16-12-30-34-30z" fill="#B9AE92"/>'+
     '</svg>'
@@ -409,6 +719,18 @@
   }
 
   /* ---------------------------------------------------------
+     Toast
+  --------------------------------------------------------- */
+  let toastTimer;
+  function showToast(msg, type=''){
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast' + (type ? ' toast-'+type : '') + ' show';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=>{ t.classList.remove('show'); }, 2800);
+  }
+
+  /* ---------------------------------------------------------
      Navegação entre abas
   --------------------------------------------------------- */
   function showTab(name){
@@ -423,6 +745,10 @@
   /* ---------------------------------------------------------
      Secretaria — autenticação por PIN
   --------------------------------------------------------- */
+  function togglePinVisibility(){
+    const input = document.getElementById('pinInput');
+    input.type = input.type === 'password' ? 'text' : 'password';
+  }
   function checkSecAuth(){ return sessionStorage.getItem('secAuth')==='1'; }
   function renderSecretaria(){
     const gate = document.getElementById('secGate');
@@ -431,6 +757,7 @@
       gate.classList.add('hidden');
       panel.classList.remove('hidden');
       renderStudentsList();
+      renderStats();
     } else {
       gate.classList.remove('hidden');
       panel.classList.add('hidden');
@@ -444,20 +771,56 @@
       err.classList.add('hidden');
       input.value='';
       renderSecretaria();
+      showToast('Bem-vindo à secretaria ✓', 'ok');
     } else {
       err.classList.remove('hidden');
+      input.value='';
+      input.focus();
+      // Shake animation
+      input.style.animation = 'none';
+      input.offsetHeight;
     }
   }
-  function logoutSec(){ sessionStorage.removeItem('secAuth'); renderSecretaria(); }
-  function changePin(){
-    const atual = prompt('Digite o PIN atual:');
-    if(atual===null) return;
-    if(atual !== getPin()){ alert('PIN atual incorreto.'); return; }
-    const novo = prompt('Novo PIN (4 a 6 números):');
-    if(novo===null) return;
-    if(!/^\d{4,6}$/.test(novo)){ alert('PIN inválido. Use de 4 a 6 números.'); return; }
+  function logoutSec(){
+    sessionStorage.removeItem('secAuth');
+    renderSecretaria();
+    showToast('Saiu da secretaria');
+  }
+
+  /* Modal de PIN */
+  function openChangePinModal(){
+    document.getElementById('modalPinAtual').value='';
+    document.getElementById('modalPinNovo').value='';
+    document.getElementById('modalPinConfirm').value='';
+    document.getElementById('modalPinErr').classList.add('hidden');
+    document.getElementById('pinModal').classList.add('open');
+    document.getElementById('modalPinAtual').focus();
+  }
+  function closePinModal(){
+    document.getElementById('pinModal').classList.remove('open');
+  }
+  function confirmarMudancaPin(){
+    const atual = document.getElementById('modalPinAtual').value;
+    const novo = document.getElementById('modalPinNovo').value;
+    const confirm = document.getElementById('modalPinConfirm').value;
+    const err = document.getElementById('modalPinErr');
+    if(atual !== getPin()){ err.textContent='PIN atual incorreto.'; err.classList.remove('hidden'); return; }
+    if(!/^\d{4,6}$/.test(novo)){ err.textContent='Novo PIN deve ter 4 a 6 dígitos.'; err.classList.remove('hidden'); return; }
+    if(novo !== confirm){ err.textContent='Os PINs não coincidem.'; err.classList.remove('hidden'); return; }
     setPin(novo);
-    alert('PIN atualizado com sucesso.');
+    closePinModal();
+    showToast('PIN atualizado com sucesso ✓', 'ok');
+  }
+
+  /* ---------------------------------------------------------
+     Stats
+  --------------------------------------------------------- */
+  function renderStats(){
+    const total = state.alunos.length;
+    const ativos = state.alunos.filter(a=>a.status==='ativo').length;
+    document.getElementById('statTotal').textContent = total;
+    document.getElementById('statAtivos').textContent = ativos;
+    document.getElementById('statInativos').textContent = total - ativos;
   }
 
   /* ---------------------------------------------------------
@@ -487,6 +850,7 @@
     document.getElementById('btnSalvarAluno').textContent = 'Salvar aluno';
     document.getElementById('btnCancelarEdicao').classList.add('hidden');
     document.getElementById('formMsg').classList.add('hidden');
+    document.getElementById('saveIndicator').classList.remove('show');
   }
 
   function salvarAluno(){
@@ -503,12 +867,13 @@
     }
     const duplicado = state.alunos.find(a => a.matricula===matricula && a.id!==editingId);
     if(duplicado){
-      msg.textContent = 'Já existe um aluno cadastrado com essa matrícula.';
+      msg.textContent = 'Já existe um aluno com essa matrícula.';
       msg.classList.remove('hidden');
       return;
     }
     msg.classList.add('hidden');
 
+    const isNew = !editingId;
     if(editingId){
       const a = state.alunos.find(x=>x.id===editingId);
       a.nome=nome; a.matricula=matricula; a.turma=turma; a.telefone=telefone;
@@ -520,8 +885,13 @@
       });
     }
     saveState();
+    const ind = document.getElementById('saveIndicator');
+    ind.classList.add('show');
+    setTimeout(()=>ind.classList.remove('show'), 2000);
     resetForm();
     renderStudentsList();
+    renderStats();
+    showToast(isNew ? `Aluno "${nome}" cadastrado ✓` : `Cadastro de "${nome}" atualizado ✓`, 'ok');
   }
 
   function editarAluno(id){
@@ -543,11 +913,13 @@
   function excluirAluno(id){
     const a = state.alunos.find(x=>x.id===id);
     if(!a) return;
-    if(!confirm('Excluir o cadastro de "'+a.nome+'"? Essa ação não pode ser desfeita.')) return;
+    if(!confirm(`Excluir o cadastro de "${a.nome}"? Essa ação não pode ser desfeita.`)) return;
     state.alunos = state.alunos.filter(x=>x.id!==id);
     saveState();
     if(editingId===id) resetForm();
     renderStudentsList();
+    renderStats();
+    showToast(`Cadastro de "${a.nome}" removido`, 'err');
   }
 
   function toggleStatus(id){
@@ -556,52 +928,75 @@
     a.status = a.status==='ativo' ? 'inativo' : 'ativo';
     saveState();
     renderStudentsList();
+    renderStats();
+    showToast(`${a.nome}: status alterado para ${a.status}`);
   }
 
   function renderStudentsList(){
     const tbody = document.getElementById('studentsBody');
-    const empty = document.getElementById('studentsEmpty');
+    const emptyEl = document.getElementById('studentsEmpty');
     if(!tbody) return;
     const term = (document.getElementById('searchInput')?.value || '').trim().toLowerCase();
-    const lista = state.alunos.filter(a =>
-      !term || a.nome.toLowerCase().includes(term) || a.matricula.toLowerCase().includes(term) || a.turma.toLowerCase().includes(term)
-    );
+    const filterStatus = document.getElementById('filterStatus')?.value || '';
+    let lista = state.alunos.filter(a => {
+      const matchTerm = !term || a.nome.toLowerCase().includes(term) || a.matricula.toLowerCase().includes(term) || a.turma.toLowerCase().includes(term);
+      const matchStatus = !filterStatus || a.status === filterStatus;
+      return matchTerm && matchStatus;
+    });
 
     if(state.alunos.length===0){
-      empty.textContent = 'Nenhum aluno cadastrado ainda. Cadastre o primeiro aluno acima.';
-      empty.classList.remove('hidden');
+      emptyEl.innerHTML = '<div class="empty-icon">🎓</div><p>Nenhum aluno cadastrado ainda.<br>Preencha o formulário acima para começar.</p>';
+      emptyEl.classList.remove('hidden');
+      tbody.innerHTML='';
+      return;
     } else if(lista.length===0){
-      empty.textContent = 'Nenhum resultado para essa busca.';
-      empty.classList.remove('hidden');
+      emptyEl.innerHTML = '<div class="empty-icon">🔍</div><p>Nenhum resultado para essa busca.<br>Tente outros termos ou <strong>remova os filtros</strong>.</p>';
+      emptyEl.classList.remove('hidden');
     } else {
-      empty.classList.add('hidden');
+      emptyEl.classList.add('hidden');
     }
 
     lista.sort((a,b)=>a.nome.localeCompare(b.nome,'pt-BR'));
     tbody.innerHTML = lista.map(a => `
       <tr>
         <td><img class="thumb" src="${a.foto||AVATAR_PLACEHOLDER}" alt=""></td>
-        <td><div class="cellname">${escapeHtml(a.nome)}</div><div class="cellsub">${escapeHtml(a.turma)}</div></td>
-        <td class="mono">${escapeHtml(a.matricula)}</td>
-        <td><button class="status-pill ${a.status==='ativo'?'is-ok':'is-off'}" onclick="toggleStatus('${a.id}')">${a.status==='ativo'?'Ativo':'Inativo'}</button></td>
+        <td>
+          <div class="cellname">${escapeHtml(a.nome)}</div>
+          <div class="cellsub">${a.telefone ? escapeHtml(a.telefone) : ''}</div>
+        </td>
+        <td class="mono" style="font-size:.82rem;">${escapeHtml(a.matricula)}</td>
+        <td style="font-size:.85rem;">${escapeHtml(a.turma)}</td>
+        <td><button class="status-pill ${a.status==='ativo'?'is-ok':'is-off'}" onclick="toggleStatus('${a.id}')" title="Clique para alternar">${a.status==='ativo'?'Ativo':'Inativo'}</button></td>
         <td class="rowactions">
-          <button class="icon-btn" title="Editar" onclick="editarAluno('${a.id}')">✎</button>
-          <button class="icon-btn danger" title="Excluir" onclick="excluirAluno('${a.id}')">🗑</button>
+          <button class="btn-icon" title="Ver carteirinha" onclick="verCarteirinhaSecretaria('${a.id}')">🪪</button>
+          <button class="btn-icon" title="Editar" onclick="editarAluno('${a.id}')">✏️</button>
+          <button class="btn-icon danger" title="Excluir" onclick="excluirAluno('${a.id}')">🗑️</button>
         </td>
       </tr>
     `).join('');
   }
 
+  function verCarteirinhaSecretaria(id){
+    const a = state.alunos.find(x=>x.id===id);
+    if(!a) return;
+    showTab('carteirinha');
+    document.getElementById('matriculaInputCard').value = a.matricula;
+    setTimeout(()=>{ buscarCarteirinha(); }, 60);
+  }
+
   function carregarExemplo(){
-    if(state.alunos.length>0 && !confirm('Já existem alunos cadastrados. Adicionar 3 alunos de exemplo mesmo assim?')) return;
+    if(state.alunos.length>0 && !confirm('Já existem alunos cadastrados. Adicionar 4 alunos de exemplo mesmo assim?')) return;
     const exemplos = [
       {nome:'Marina Costa Lima', matricula:'2026001', turma:'9º Ano A', telefone:'(82) 99999-0001'},
       {nome:'Pedro Henrique Souza', matricula:'2026002', turma:'7º Ano B', telefone:'(82) 99999-0002'},
-      {nome:'Beatriz Andrade Silva', matricula:'2026003', turma:'1ª Série EM', telefone:''}
+      {nome:'Beatriz Andrade Silva', matricula:'2026003', turma:'1ª Série EM', telefone:''},
+      {nome:'Rafael Gomes Neto', matricula:'2026004', turma:'6º Ano C', telefone:'(82) 99999-0004'},
     ];
     exemplos.forEach(e => state.alunos.push({ id:uid(), ...e, foto:null, status:'ativo', criadoEm:Date.now() }));
     saveState();
     renderStudentsList();
+    renderStats();
+    showToast('4 alunos de exemplo adicionados ✓', 'ok');
   }
 
   function exportarBackup(){
@@ -614,6 +1009,7 @@
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
+    showToast('Backup exportado com sucesso ✓', 'ok');
   }
 
   function importarBackup(e){
@@ -628,9 +1024,9 @@
         state = { escolaNome: data.escolaNome || 'Minha Escola', alunos: data.alunos || [], acessos: data.acessos || [] };
         saveState();
         renderAll();
-        alert('Backup importado com sucesso.');
+        showToast('Backup importado com sucesso ✓', 'ok');
       }catch(err){
-        alert('Não foi possível importar este arquivo. Verifique se é um backup válido gerado por este sistema.');
+        showToast('Arquivo inválido. Verifique se é um backup gerado por este sistema.', 'err');
       }
     };
     reader.readAsText(file);
@@ -646,7 +1042,7 @@
     if(!term) return;
     const aluno = state.alunos.find(a=>a.matricula===term);
     if(!aluno){
-      result.innerHTML = `<p class="notfound">Não encontramos nenhuma carteirinha com a matrícula <strong>${escapeHtml(term)}</strong>. Confira o número com a secretaria.</p>`;
+      result.innerHTML = `<div class="notfound">Nenhuma carteirinha encontrada para a matrícula <strong>${escapeHtml(term)}</strong>.<br><span style="font-size:.83rem;color:var(--slate-light);">Confira o número com a secretaria.</span></div>`;
       return;
     }
     renderCard(aluno);
@@ -656,33 +1052,40 @@
     const result = document.getElementById('cardResult');
     const isAtivo = aluno.status === 'ativo';
     const hoje = new Date().toLocaleDateString('pt-BR');
+    const ano = new Date().getFullYear();
     result.innerHTML = `
       <div class="idcard" id="idcardPrint">
         <div class="idcard-stripe"></div>
         <div class="idcard-head">
-          <div class="idcard-school">${escapeHtml(state.escolaNome)}</div>
-          <div class="idcard-doctype">Carteirinha do estudante</div>
+          <div class="idcard-head-left">
+            <div class="idcard-school">${escapeHtml(state.escolaNome)}</div>
+            <div class="idcard-doctype">Carteirinha do estudante</div>
+          </div>
+          <div class="idcard-year">${ano}</div>
         </div>
         <div class="idcard-body">
           <img class="idcard-photo" src="${aluno.foto||AVATAR_PLACEHOLDER}" alt="">
           <div class="idcard-info">
             <div class="idcard-name">${escapeHtml(aluno.nome)}</div>
-            <div class="idcard-row"><span>Matrícula</span><strong class="mono">${escapeHtml(aluno.matricula)}</strong></div>
+            <div class="idcard-row"><span>Matrícula</span><strong class="mono" style="font-size:.78rem;">${escapeHtml(aluno.matricula)}</strong></div>
             <div class="idcard-row"><span>Turma</span><strong>${escapeHtml(aluno.turma)}</strong></div>
-            <div class="idcard-row"><span>Válida em</span><strong>${hoje}</strong></div>
+            <div class="idcard-row"><span>Data de verificação</span><strong>${hoje}</strong></div>
           </div>
         </div>
         <div class="idcard-foot">
-          <canvas id="qrCanvas" width="84" height="84"></canvas>
-          <div class="idcard-stamp ${isAtivo?'stamp-ok':'stamp-off'}">${isAtivo?'Ativo':'Inativo'}</div>
+          <canvas id="qrCanvas" width="80" height="80"></canvas>
+          <div class="idcard-stamp ${isAtivo?'stamp-ok':'stamp-off'}">${isAtivo?'✓ Ativo':'✗ Inativo'}</div>
         </div>
       </div>
-      <div style="text-align:center;"><button class="btn-secondary" onclick="window.print()">Imprimir carteirinha</button></div>
+      <div class="card-actions">
+        <button class="btn-secondary" onclick="window.print()" style="font-size:.82rem;">🖨 Imprimir</button>
+        <button class="btn-secondary" onclick="document.getElementById('cardResult').innerHTML=''; document.getElementById('matriculaInputCard').value=''; document.getElementById('matriculaInputCard').focus();" style="font-size:.82rem;">✕ Fechar</button>
+      </div>
     `;
     setTimeout(()=>{
       const canvas = document.getElementById('qrCanvas');
       if(canvas && window.QRCode){
-        QRCode.toCanvas(canvas, aluno.matricula, { width:84, margin:0, color:{ dark:'#1B2A4A', light:'#FFFFFF' } }, function(){});
+        QRCode.toCanvas(canvas, aluno.matricula, { width:80, margin:0, color:{ dark:'#1B2A4A', light:'#FFFFFF' } }, function(){});
       }
     }, 0);
   }
@@ -692,16 +1095,24 @@
   --------------------------------------------------------- */
   function addLog(entry){
     state.acessos.unshift({ ts:Date.now(), ...entry });
-    state.acessos = state.acessos.slice(0,30);
+    state.acessos = state.acessos.slice(0,50);
     saveState();
     renderLog();
+  }
+
+  function clearLog(){
+    if(!confirm('Limpar todo o registro de acessos?')) return;
+    state.acessos = [];
+    saveState();
+    renderLog();
+    showToast('Registro de acessos limpo');
   }
 
   function renderLog(){
     const box = document.getElementById('logList');
     if(!box) return;
     if(state.acessos.length===0){
-      box.innerHTML = '<p class="muted">Nenhuma verificação realizada ainda.</p>';
+      box.innerHTML = '<p class="muted" style="padding:12px 0;">Nenhuma verificação realizada ainda.</p>';
       return;
     }
     box.innerHTML = state.acessos.map(l=>{
@@ -721,15 +1132,15 @@
 
     if(!aluno){
       panel.className = 'verify-panel is-off';
-      panel.innerHTML = `<div class="verify-icon">⛔</div><div class="verify-title">Acesso negado</div><div class="verify-sub">Matrícula "${escapeHtml(matricula)}" não encontrada no sistema.</div>`;
+      panel.innerHTML = `<div class="verify-icon">⛔</div><div class="verify-title">Acesso negado</div><p class="verify-sub">Matrícula "${escapeHtml(matricula)}" não encontrada.</p>`;
       addLog({ matricula, nome:null, resultado:'nao_encontrado' });
     } else if(aluno.status !== 'ativo'){
       panel.className = 'verify-panel is-warn';
-      panel.innerHTML = `<div class="verify-icon">⚠️</div><div class="verify-title">Acesso negado</div><div class="verify-sub">Cadastro inativo</div><div class="verify-student"><img src="${aluno.foto||AVATAR_PLACEHOLDER}"><div><strong>${escapeHtml(aluno.nome)}</strong><br><span class="mono">${escapeHtml(aluno.matricula)}</span> · ${escapeHtml(aluno.turma)}</div></div>`;
+      panel.innerHTML = `<div class="verify-icon">⚠️</div><div class="verify-title">Acesso negado</div><p class="verify-sub">Cadastro inativo</p><div class="verify-student"><img src="${aluno.foto||AVATAR_PLACEHOLDER}"><div><strong>${escapeHtml(aluno.nome)}</strong><br><span class="mono" style="font-size:.8rem;">${escapeHtml(aluno.matricula)}</span> · ${escapeHtml(aluno.turma)}</div></div>`;
       addLog({ matricula, nome:aluno.nome, resultado:'inativo' });
     } else {
       panel.className = 'verify-panel is-ok';
-      panel.innerHTML = `<div class="verify-icon">✅</div><div class="verify-title">Acesso liberado</div><div class="verify-student"><img src="${aluno.foto||AVATAR_PLACEHOLDER}"><div><strong>${escapeHtml(aluno.nome)}</strong><br><span class="mono">${escapeHtml(aluno.matricula)}</span> · ${escapeHtml(aluno.turma)}</div></div>`;
+      panel.innerHTML = `<div class="verify-icon">✅</div><div class="verify-title">Acesso liberado</div><div class="verify-student"><img src="${aluno.foto||AVATAR_PLACEHOLDER}"><div><strong>${escapeHtml(aluno.nome)}</strong><br><span class="mono" style="font-size:.8rem;">${escapeHtml(aluno.matricula)}</span> · ${escapeHtml(aluno.turma)}</div></div>`;
       addLog({ matricula, nome:aluno.nome, resultado:'liberado' });
     }
 
@@ -759,7 +1170,7 @@
       statusEl.textContent = 'Aponte a câmera para o QR code da carteirinha…';
       requestAnimationFrame(scanFrame);
     }catch(err){
-      statusEl.textContent = 'Não foi possível acessar a câmera neste dispositivo ou navegador. Use a digitação manual abaixo.';
+      statusEl.textContent = 'Não foi possível acessar a câmera. Use a digitação manual abaixo.';
     }
   }
 
@@ -802,11 +1213,17 @@
     document.getElementById('escolaNomeInput').value = state.escolaNome;
     document.getElementById('fotoPreview').src = AVATAR_PLACEHOLDER;
     renderStudentsList();
+    renderStats();
     renderLog();
     renderSecretaria();
   }
 
   document.addEventListener('DOMContentLoaded', renderAll);
+
+  // Fechar modal com Escape
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Escape') closePinModal();
+  });
 </script>
 </body>
 </html>
