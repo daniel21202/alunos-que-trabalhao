@@ -3,1227 +3,1025 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Carteirinha Digital — Sistema de Acesso Escolar</title>
+<title>Carteirinha Digital · Aluno Trabalhador</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,400&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
+  *,*::before,*::after{box-sizing:border-box; margin:0; padding:0;}
   :root{
-    --ink:#1B2A4A;
-    --ink-deep:#101b33;
-    --ink-mid:#2a3f6a;
-    --paper:#F7F4EC;
-    --paper-dim:#EDE8D8;
-    --paper-bright:#FDFBF5;
-    --gold:#C8A04B;
-    --gold-soft:#E3C77E;
-    --gold-pale:#F5EDCF;
-    --ok:#22745A;
-    --ok-soft:#D4EDE4;
-    --ok-ring:#A8D9C6;
-    --danger:#A83030;
-    --danger-soft:#F5DADA;
-    --warn:#9A6A18;
-    --warn-soft:#F7ECCE;
-    --slate:#5B6472;
-    --slate-light:#9aa1ac;
-    --line: rgba(27,42,74,0.1);
-    --line-strong: rgba(27,42,74,0.2);
-    --shadow-sm: 0 2px 8px rgba(16,27,51,0.07);
-    --shadow: 0 8px 28px rgba(16,27,51,0.13);
-    --shadow-lg: 0 20px 50px rgba(16,27,51,0.2);
-    --radius-sm:10px;
-    --radius:16px;
-    --radius-lg:22px;
+    --cream:#FBF5EC;
+    --ink:#2D1F0E;
+    --amber:#C97B2E;
+    --amber-lt:#FFF0D6;
+    --amber-dk:#A85E1A;
+    --rust:#C0392B;
+    --rust-lt:#FBEAEA;
+    --sage:#2E7D52;
+    --sage-lt:#E8F5EE;
+    --mist:#F5EFE4;
+    --border:#DFC9A3;
+    --muted:#8C7A62;
+    --label-c:#6B5840;
+    --sh-sm:0 2px 8px rgba(133,77,9,.08);
+    --sh-md:0 6px 24px rgba(26,18,8,.13);
+    --sh-lg:0 16px 48px rgba(26,18,8,.18);
+    --r:14px; --r-sm:8px; --r-lg:22px;
+    --tr:.22s cubic-bezier(.4,0,.2,1);
+    --display:'Playfair Display', serif;
+    --body:'DM Sans', sans-serif;
+    --mono:'IBM Plex Mono', monospace;
   }
-  *{ box-sizing:border-box; }
+  html{scroll-behavior:smooth;}
   body{
-    margin:0;
-    background:var(--paper);
-    background-image:
-      radial-gradient(circle at 1px 1px, rgba(27,42,74,0.04) 1px, transparent 0);
-    background-size:24px 24px;
+    font-family:var(--body);
+    background:var(--cream);
     color:var(--ink);
-    font-family:'Inter',sans-serif;
     min-height:100vh;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
   }
-  .hidden{ display:none !important; }
-  .hidden-file{ display:none; }
-  .muted{ color:var(--slate); font-size:.88rem; }
-  .small{ font-size:.78rem; }
-  .mono{ font-family:'Space Mono',monospace; }
-  .error{ color:var(--danger); font-size:.83rem; margin-top:8px; display:flex; align-items:center; gap:6px; }
-  .error::before{ content:'⚠'; font-size:.9rem; }
+  h1,h2,h3{font-family:var(--display); line-height:1.2;}
+  .hidden{display:none !important;}
+  :focus-visible{outline:3px solid var(--amber); outline-offset:2px;}
+  button{font-family:var(--body); cursor:pointer;}
+  input,select{font-family:var(--body);}
+  ::-webkit-scrollbar{width:6px;}
+  ::-webkit-scrollbar-track{background:var(--mist);}
+  ::-webkit-scrollbar-thumb{background:var(--border); border-radius:99px;}
 
-  button, input, label, select{ font-family:'Inter',sans-serif; }
-  button{ cursor:pointer; }
-  button:focus-visible, input:focus-visible{ outline:3px solid var(--gold); outline-offset:2px; border-radius:4px; }
+  /* ===================== BOTÕES ===================== */
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:.5rem;
+    padding:.8rem 1.8rem; border:none; border-radius:var(--r-sm);
+    font-family:var(--body); font-size:.95rem; font-weight:500;
+    cursor:pointer; transition:var(--tr); letter-spacing:.02em;
+  }
+  .btn-primary{background:var(--amber); color:#fff;}
+  .btn-primary:hover{background:var(--amber-dk); transform:translateY(-1px); box-shadow:var(--sh-sm);}
+  .btn-secretaria{background:var(--amber-dk); color:#fff;}
+  .btn-secretaria:hover{background:#8A4D12; transform:translateY(-1px);}
+  .btn-portaria{background:var(--ink); color:#fff;}
+  .btn-portaria:hover{background:#46301c; transform:translateY(-1px);}
+  .btn-ghost{background:transparent; color:var(--ink); border:1.5px solid var(--border);}
+  .btn-ghost:hover{background:var(--mist);}
+  .btn-danger-text{background:none; border:none; color:var(--rust); font-size:13px; font-weight:600; padding:4px 6px;}
+  .btn-edit-text{background:none; border:none; color:var(--ink); font-size:13px; font-weight:600; padding:4px 6px;}
+  .btn-full{width:100%; padding:.9rem; font-size:1rem; margin-top:.4rem;}
 
-  .app{ max-width:1100px; margin:0 auto; padding:28px 20px 72px; }
-
-  /* ---------- TOPBAR ---------- */
-  .topbar{
-    display:flex; justify-content:space-between; align-items:center;
-    gap:20px; padding:16px 24px; margin-bottom:28px;
-    background:var(--ink); border-radius:var(--radius-lg);
-    box-shadow:var(--shadow-lg); flex-wrap:wrap;
+  /* ===================== CAMPOS ===================== */
+  .field-group{display:flex; flex-direction:column; gap:.4rem; margin-bottom:1.1rem;}
+  .field-group.full{grid-column:1/-1;}
+  .field-group label{
+    font-size:.76rem; font-weight:600; letter-spacing:.05em; text-transform:uppercase; color:var(--label-c);
   }
-  .brand{ display:flex; gap:14px; align-items:center; }
-  .crest{ width:44px; height:44px; flex-shrink:0; filter:drop-shadow(0 2px 6px rgba(0,0,0,0.4)); }
-  .brand-text{ display:flex; flex-direction:column; gap:2px; }
-  .brand-input{
-    font-family:'Fraunces',serif; font-weight:700; font-size:1.3rem;
-    border:none; background:transparent; color:#fff;
-    padding:2px 0; border-bottom:2px solid transparent; min-width:200px;
-    letter-spacing:-.01em;
+  .field-group .opt{font-weight:400; text-transform:none; letter-spacing:0; color:var(--muted);}
+  .field-group input, .field-group select{
+    padding:.75rem 1rem; border:1.5px solid var(--border); border-radius:var(--r-sm);
+    font-family:var(--body); font-size:.95rem; background:#fff; color:var(--ink);
+    transition:var(--tr); outline:none;
   }
-  .brand-input::placeholder{ color:rgba(255,255,255,.35); }
-  .brand-input:hover{ border-bottom-color:rgba(200,160,75,.5); }
-  .brand-input:focus{ outline:none; border-bottom-color:var(--gold); }
-  .subtitle{ margin:0; font-size:.68rem; text-transform:uppercase; letter-spacing:.12em; color:rgba(200,160,75,.75); }
-
-  .tabs{ display:flex; gap:6px; background:rgba(255,255,255,.07); padding:6px; border-radius:14px; }
-  .tab-btn{
-    border:none; background:transparent; color:rgba(255,255,255,.55);
-    font-weight:600; font-size:.82rem; padding:9px 16px;
-    border-radius:10px; transition:all .18s; display:flex; align-items:center; gap:7px; white-space:nowrap;
+  .field-group input:focus, .field-group select:focus{
+    border-color:var(--amber); box-shadow:0 0 0 3px rgba(201,123,46,.15);
   }
-  .tab-btn .tab-icon{ font-size:1rem; }
-  .tab-btn.active{ background:#fff; color:var(--ink); box-shadow:0 2px 8px rgba(0,0,0,.18); }
-  .tab-btn:not(.active):hover{ background:rgba(255,255,255,.12); color:#fff; }
-
-  /* ---------- SECTION HEADERS ---------- */
-  .section-header{
-    display:flex; justify-content:space-between; align-items:center;
-    margin-bottom:22px; flex-wrap:wrap; gap:12px;
+  .field-group select{
+    appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23C97B2E' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 1rem center; padding-right:2.5rem;
   }
-  .section-title{ font-family:'Fraunces',serif; font-size:1.6rem; font-weight:700; margin:0; }
-  .section-sub{ font-size:.82rem; color:var(--slate); margin:4px 0 0; }
-
-  /* ---------- CARDS ---------- */
-  .card{
-    background:var(--paper-bright); border:1px solid var(--line); border-radius:var(--radius-lg);
-    padding:28px; margin-bottom:20px; box-shadow:var(--shadow-sm);
-    transition:box-shadow .2s;
+  .pass-wrap{display:flex; position:relative;}
+  .pass-wrap input{flex:1; border-radius:var(--r-sm) 0 0 var(--r-sm) !important;}
+  .eye-btn{
+    padding:0 1rem; background:var(--mist); border:1.5px solid var(--border); border-left:none;
+    border-radius:0 var(--r-sm) var(--r-sm) 0; cursor:pointer; font-size:1rem; transition:var(--tr);
   }
-  .card:hover{ box-shadow:var(--shadow); }
-  .card h2{ font-family:'Fraunces',serif; font-size:1.3rem; margin:0 0 6px; }
-  .card h3{ font-family:'Fraunces',serif; font-size:1.1rem; margin:0 0 16px; color:var(--ink); }
-  .centered-card{ max-width:500px; margin:0 auto; }
-
-  /* ---------- BUTTONS ---------- */
-  .btn-primary{
-    background:var(--ink); color:#fff; border:none; padding:11px 22px;
-    border-radius:999px; font-weight:600; font-size:.84rem; letter-spacing:.01em;
-    transition:background .15s, transform .1s, box-shadow .15s;
-    box-shadow:0 2px 8px rgba(27,42,74,.3);
-  }
-  .btn-primary:hover{ background:var(--ink-deep); box-shadow:0 4px 14px rgba(27,42,74,.35); }
-  .btn-primary:active{ transform:scale(.97); }
-  .btn-primary:disabled{ background:var(--slate-light); cursor:not-allowed; box-shadow:none; }
-
-  .btn-secondary{
-    background:transparent; color:var(--ink); border:2px solid var(--line-strong);
-    padding:9px 20px; border-radius:999px; font-weight:600; font-size:.84rem;
-    transition:all .15s;
-  }
-  .btn-secondary:hover{ background:var(--ink); color:#fff; border-color:var(--ink); }
-
-  .btn-gold{
-    background:linear-gradient(135deg,var(--gold),var(--gold-soft)); color:var(--ink-deep);
-    border:none; padding:11px 22px; border-radius:999px; font-weight:700; font-size:.84rem;
-    box-shadow:0 2px 10px rgba(200,160,75,.35); transition:all .15s;
-  }
-  .btn-gold:hover{ box-shadow:0 4px 18px rgba(200,160,75,.5); transform:translateY(-1px); }
-
-  .link-btn{
-    background:none; border:none; color:var(--slate); font-size:.8rem;
-    text-decoration:underline; padding:5px 2px; transition:color .12s;
-  }
-  .link-btn:hover{ color:var(--ink); }
-
-  .btn-icon{
-    background:none; border:none; color:var(--slate); font-size:.85rem;
-    padding:5px 8px; border-radius:8px; transition:all .12s; display:inline-flex; align-items:center; gap:5px;
-  }
-  .btn-icon:hover{ background:var(--paper-dim); color:var(--ink); }
-  .btn-icon.danger:hover{ background:var(--danger-soft); color:var(--danger); }
-
-  /* ---------- GATE (secretaria login) ---------- */
-  .gate-wrap{
-    min-height:65vh; display:flex; align-items:center; justify-content:center; padding:20px;
-  }
-  .gate-card{
-    width:100%; max-width:380px; text-align:center;
-    background:var(--paper-bright); border:1px solid var(--line); border-radius:var(--radius-lg);
-    padding:44px 36px 36px; box-shadow:var(--shadow-lg);
-  }
-  .gate-badge{
-    width:68px; height:68px; border-radius:50%; background:linear-gradient(135deg,var(--ink),var(--ink-mid));
-    display:flex; align-items:center; justify-content:center; margin:0 auto 20px;
-    font-size:1.7rem; box-shadow:0 6px 20px rgba(27,42,74,.3);
-  }
-  .gate-card h2{ font-family:'Fraunces',serif; font-size:1.45rem; margin:0 0 6px; }
-  .gate-card p{ color:var(--slate); font-size:.88rem; margin:0 0 24px; line-height:1.5; }
-  .pin-group{ position:relative; width:160px; margin:0 auto 16px; }
-  .pin-input{
-    display:block; width:100%; text-align:center;
-    font-family:'Space Mono',monospace; font-size:1.6rem; letter-spacing:.4em;
-    padding:10px 4px; border:none; border-bottom:3px solid var(--line-strong); background:transparent;
-    transition:border-color .15s;
-  }
-  .pin-input:focus{ outline:none; border-bottom-color:var(--gold); }
-  .pin-toggle{
-    position:absolute; right:-32px; top:50%; transform:translateY(-50%);
-    background:none; border:none; color:var(--slate); padding:4px; font-size:1rem; cursor:pointer;
-  }
-  .hint{ font-size:.72rem; color:var(--slate-light); margin-top:18px; line-height:1.5; }
-  .hint strong{ color:var(--slate); }
-
-  /* ---------- SEC TOOLBAR ---------- */
-  .sec-toolbar{
-    display:flex; justify-content:space-between; align-items:center;
-    flex-wrap:wrap; gap:10px; margin-bottom:20px;
-    background:var(--paper-dim); border-radius:var(--radius); padding:12px 18px;
-    border:1px solid var(--line);
-  }
-  .sec-toolbar-user{ display:flex; align-items:center; gap:8px; font-size:.82rem; }
-  .sec-toolbar-user::before{ content:'🔓'; font-size:1rem; }
-  .sec-toolbar-actions{ display:flex; gap:4px; flex-wrap:wrap; align-items:center; }
-  .sec-action-btn{
-    background:none; border:1px solid var(--line); color:var(--slate); font-size:.75rem;
-    padding:6px 12px; border-radius:999px; cursor:pointer; transition:all .12s;
-    display:inline-flex; align-items:center; gap:5px;
-  }
-  .sec-action-btn:hover{ background:var(--ink); color:#fff; border-color:var(--ink); }
-
-  /* ---------- FORM ---------- */
-  .form-grid{ display:grid; grid-template-columns:120px 1fr; gap:28px; align-items:start; margin-bottom:8px; }
-  .photo-upload label{
-    display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;
-    padding:12px; border-radius:var(--radius); transition:background .15s;
-  }
-  .photo-upload label:hover{ background:var(--paper-dim); }
-  .photo-ring{
-    width:88px; height:88px; border-radius:50%; border:2px dashed var(--slate-light);
-    background:var(--paper-dim); overflow:hidden; display:flex; align-items:center; justify-content:center;
-    transition:border-color .15s;
-  }
-  .photo-upload label:hover .photo-ring{ border-color:var(--gold); }
-  .photo-ring img{ width:100%; height:100%; object-fit:cover; }
-  .photo-upload span{ font-size:.65rem; color:var(--slate); text-transform:uppercase; letter-spacing:.06em; text-align:center; }
-  .form-fields label{ display:flex; flex-direction:column; gap:5px; font-size:.68rem; text-transform:uppercase; letter-spacing:.06em; color:var(--slate); margin-bottom:16px; }
-  .form-fields input{
-    font-size:.95rem; color:var(--ink); padding:9px 2px; border:none;
-    border-bottom:2px solid var(--line); background:transparent; transition:border-color .15s;
-  }
-  .form-fields input:focus{ outline:none; border-bottom-color:var(--gold); }
-  .form-row2{ display:grid; grid-template-columns:1fr 1fr; gap:18px; }
-  .form-actions{ display:flex; gap:10px; margin-top:12px; align-items:center; flex-wrap:wrap; }
-  .save-indicator{ font-size:.75rem; color:var(--ok); display:none; align-items:center; gap:4px; }
-  .save-indicator.show{ display:flex; }
-
-  /* ---------- STATS BAR ---------- */
-  .stats-row{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:20px; }
-  .stat-card{
-    background:var(--paper-bright); border:1px solid var(--line); border-radius:var(--radius);
-    padding:18px 20px; display:flex; flex-direction:column; gap:4px;
-  }
-  .stat-num{ font-family:'Fraunces',serif; font-size:1.9rem; font-weight:700; line-height:1; }
-  .stat-label{ font-size:.73rem; text-transform:uppercase; letter-spacing:.07em; color:var(--slate); }
-  .stat-card.stat-ok .stat-num{ color:var(--ok); }
-  .stat-card.stat-off .stat-num{ color:var(--danger); }
-
-  /* ---------- TABLE ---------- */
-  .table-container{ overflow-x:auto; margin-top:10px; border-radius:var(--radius); border:1px solid var(--line); }
-  .students-table{ width:100%; border-collapse:collapse; }
-  .students-table th{
-    text-align:left; font-size:.65rem; text-transform:uppercase; letter-spacing:.07em;
-    color:var(--slate); padding:12px 14px; background:var(--paper-dim);
-    border-bottom:2px solid var(--gold); white-space:nowrap;
-  }
-  .students-table th:first-child{ border-radius:var(--radius) 0 0 0; }
-  .students-table th:last-child{ border-radius:0 var(--radius) 0 0; }
-  .students-table td{ padding:11px 14px; border-bottom:1px solid var(--line); vertical-align:middle; font-size:.88rem; }
-  .students-table tr:last-child td{ border-bottom:none; }
-  .students-table tbody tr{ transition:background .1s; }
-  .students-table tbody tr:hover{ background:var(--paper-dim); }
-  .thumb{ width:38px; height:38px; border-radius:50%; object-fit:cover; border:2px solid var(--line); }
-  .cellname{ font-weight:600; color:var(--ink); }
-  .cellsub{ font-size:.73rem; color:var(--slate); margin-top:2px; }
-  .status-pill{
-    border:none; border-radius:999px; padding:5px 13px; font-size:.68rem; font-weight:700;
-    text-transform:uppercase; letter-spacing:.04em; cursor:pointer; transition:all .15s;
-  }
-  .status-pill.is-ok{ background:var(--ok-soft); color:var(--ok); }
-  .status-pill.is-ok:hover{ background:var(--ok); color:#fff; }
-  .status-pill.is-off{ background:var(--danger-soft); color:var(--danger); }
-  .status-pill.is-off:hover{ background:var(--danger); color:#fff; }
-  .rowactions{ white-space:nowrap; }
-
-  /* ---------- SEARCH / FILTER BAR ---------- */
-  .list-controls{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-  .search-wrap{ position:relative; flex:1; min-width:220px; }
-  .search-wrap svg{ position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--slate-light); pointer-events:none; }
-  .search-wrap input{
-    width:100%; padding:10px 14px 10px 38px; border:1px solid var(--line);
-    border-radius:var(--radius-sm); background:var(--paper-bright); color:var(--ink); font-size:.88rem;
-    transition:border-color .15s;
-  }
-  .search-wrap input:focus{ outline:none; border-color:var(--gold); }
-  .filter-select{
-    padding:10px 14px; border:1px solid var(--line); border-radius:var(--radius-sm);
-    background:var(--paper-bright); color:var(--ink); font-size:.85rem; cursor:pointer;
+  .eye-btn:hover{background:var(--border);}
+  .hint-box{
+    display:flex; align-items:center; gap:.5rem; background:#FFF8ED; border:1px solid #F0D090;
+    border-radius:var(--r-sm); padding:.7rem 1rem; font-size:.84rem; color:#8C5220; margin-bottom:1.1rem;
   }
 
-  /* ---------- EMPTY STATE ---------- */
-  .empty-state{ text-align:center; padding:50px 20px; color:var(--slate); }
-  .empty-state .empty-icon{ font-size:2.5rem; margin-bottom:12px; opacity:.5; }
-  .empty-state p{ font-size:.9rem; margin:0; line-height:1.5; }
-  .empty-state strong{ color:var(--ink); }
-
-  /* ---------- ID CARD ---------- */
-  .card-result{ margin-top:16px; }
-  .notfound{ color:var(--slate); font-style:italic; padding:28px; text-align:center; background:var(--paper-dim); border-radius:var(--radius); }
-
-  .idcard{
-    width:320px; min-height:490px; border-radius:22px; margin:0 auto 20px;
-    background:linear-gradient(155deg, var(--ink-mid) 0%, var(--ink-deep) 55%, #0a1122 100%);
-    position:relative; overflow:hidden; color:#fff;
-    box-shadow: 0 25px 60px rgba(16,27,51,.5), inset 0 1px 0 rgba(255,255,255,.08);
+  /* ===================== ANIMAÇÕES ===================== */
+  @keyframes slideUp{from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);}}
+  @keyframes shake{
+    0%,100%{transform:translateX(0);} 20%{transform:translateX(-7px);} 40%{transform:translateX(7px);}
+    60%{transform:translateX(-5px);} 80%{transform:translateX(5px);}
   }
-  .idcard::before{
-    content:''; position:absolute; inset:0;
-    background-image:repeating-linear-gradient(130deg, rgba(255,255,255,.025) 0 1px, transparent 1px 16px);
-    pointer-events:none;
-  }
-  .idcard::after{
-    content:''; position:absolute; bottom:-60px; right:-60px;
-    width:200px; height:200px; border-radius:50%;
-    background:radial-gradient(circle, rgba(200,160,75,.15) 0%, transparent 70%);
-    pointer-events:none;
-  }
-  .idcard-stripe{ height:8px; background:linear-gradient(90deg,var(--gold-soft),var(--gold),var(--gold-soft)); position:relative; z-index:1; }
-  .idcard-head{ padding:20px 22px 6px; position:relative; z-index:1; display:flex; justify-content:space-between; align-items:flex-start; }
-  .idcard-head-left{}
-  .idcard-school{ font-family:'Fraunces',serif; font-weight:700; font-size:1rem; line-height:1.25; letter-spacing:-.01em; }
-  .idcard-doctype{ font-size:.6rem; text-transform:uppercase; letter-spacing:.15em; color:var(--gold-soft); margin-top:4px; opacity:.8; }
-  .idcard-year{ font-family:'Space Mono',monospace; font-size:.65rem; color:rgba(255,255,255,.3); }
-  .idcard-body{ display:flex; flex-direction:column; align-items:center; padding:12px 24px 6px; gap:14px; position:relative; z-index:1; }
-  .idcard-photo{
-    width:110px; height:110px; border-radius:50%; object-fit:cover;
-    border:3px solid var(--gold); background:var(--ink-deep);
-    box-shadow:0 6px 24px rgba(0,0,0,.4);
-  }
-  .idcard-info{ width:100%; }
-  .idcard-name{ font-family:'Fraunces',serif; font-weight:600; font-size:1.08rem; text-align:center; margin-bottom:12px; line-height:1.25; }
-  .idcard-row{ display:flex; justify-content:space-between; align-items:center; font-size:.77rem; padding:7px 0; border-bottom:1px solid rgba(255,255,255,.1); }
-  .idcard-row:last-child{ border-bottom:none; }
-  .idcard-row span{ color:rgba(255,255,255,.45); text-transform:uppercase; letter-spacing:.07em; font-size:.6rem; }
-  .idcard-foot{ display:flex; align-items:center; justify-content:space-between; padding:14px 22px 22px; position:relative; z-index:1; }
-  #qrCanvas{ background:#fff; border-radius:8px; padding:5px; display:block; box-shadow:0 2px 8px rgba(0,0,0,.3); }
-  .idcard-stamp{
-    font-family:'Space Mono',monospace; text-transform:uppercase; font-weight:700;
-    font-size:.78rem; letter-spacing:.1em; border:2px dashed; padding:7px 14px;
-    border-radius:6px; transform:rotate(-10deg); position:relative;
-  }
-  .stamp-ok{ color:#7DE2B2; border-color:#7DE2B2; text-shadow:0 0 12px rgba(125,226,178,.4); }
-  .stamp-off{ color:#E89A9A; border-color:#E89A9A; }
-
-  .card-actions{ display:flex; justify-content:center; gap:10px; margin-top:4px; }
-
-  /* ---------- PORTARIA ---------- */
-  .scan-area{ text-align:center; margin:16px 0; }
-  .scan-wrap{
-    position:relative; width:260px; height:260px; margin:16px auto;
-    border-radius:20px; overflow:hidden; background:#000;
-    box-shadow:0 8px 32px rgba(0,0,0,.4);
-  }
-  .scan-wrap video{ width:100%; height:100%; object-fit:cover; }
-  .corner{ position:absolute; width:28px; height:28px; }
-  .corner-tl{ top:10px; left:10px; border-top:3px solid var(--gold); border-left:3px solid var(--gold); border-radius:6px 0 0 0; }
-  .corner-tr{ top:10px; right:10px; border-top:3px solid var(--gold); border-right:3px solid var(--gold); border-radius:0 6px 0 0; }
-  .corner-bl{ bottom:10px; left:10px; border-bottom:3px solid var(--gold); border-left:3px solid var(--gold); border-radius:0 0 0 6px; }
-  .corner-br{ bottom:10px; right:10px; border-bottom:3px solid var(--gold); border-right:3px solid var(--gold); border-radius:0 0 6px 0; }
-  .scan-line{
-    position:absolute; left:10px; right:10px; height:2px;
-    background:linear-gradient(90deg,transparent,var(--gold),transparent);
-    animation:scanMove 2s linear infinite; border-radius:2px;
-  }
-  @keyframes scanMove{
-    0%{ top:10%; }
-    50%{ top:85%; }
-    100%{ top:10%; }
+  @keyframes drift{from{transform:translate(0,0);} to{transform:translate(40px,30px);}}
+  @keyframes stampIn{from{transform:scale(1.5) rotate(-4deg); opacity:0;} to{transform:scale(1) rotate(-4deg); opacity:1;}}
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.001ms !important; animation-iteration-count:1 !important;}
   }
 
-  .portaria-divider{ display:flex; align-items:center; gap:12px; margin:18px 0; color:var(--slate-light); font-size:.75rem; }
-  .portaria-divider::before,.portaria-divider::after{ content:''; flex:1; height:1px; background:var(--line); }
-
-  .search-bar{ display:flex; gap:8px; }
-  .search-bar input{
-    flex:1; padding:11px 14px; border:1px solid var(--line); border-radius:var(--radius-sm);
-    font-size:.92rem; background:var(--paper-bright); transition:border-color .15s;
+  /* ===================== TELA DE LOGIN ===================== */
+  #screen-login{
+    min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:2rem 1rem; gap:1.6rem; position:relative; overflow:hidden;
   }
-  .search-bar input:focus{ outline:none; border-color:var(--gold); }
-
-  .verify-panel{
-    border-radius:var(--radius-lg); padding:32px 24px; text-align:center;
-    min-height:160px; display:flex; flex-direction:column; align-items:center;
-    justify-content:center; gap:10px; margin-top:18px; transition:all .25s;
+  .bg-c1,.bg-c2{position:fixed; border-radius:50%; filter:blur(80px); opacity:.55; pointer-events:none; z-index:0;}
+  .bg-c1{width:600px; height:600px; background:radial-gradient(circle,#E8A94A55,transparent 70%); top:-200px; left:-100px; animation:drift 12s ease-in-out infinite alternate;}
+  .bg-c2{width:500px; height:500px; background:radial-gradient(circle,#C97B2E33,transparent 70%); bottom:-150px; right:-100px; animation:drift 16s ease-in-out infinite alternate-reverse;}
+  .bg-grid{
+    position:fixed; inset:0;
+    background-image:linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size:48px 48px; opacity:.22; pointer-events:none; z-index:0;
   }
-  .verify-panel.idle{ background:var(--paper-dim); color:var(--slate); border:1px solid var(--line); }
-  .verify-panel.is-ok{ background:var(--ok-soft); color:var(--ok); border:1px solid var(--ok-ring); }
-  .verify-panel.is-off{ background:var(--danger-soft); color:var(--danger); border:1px solid rgba(168,48,48,.2); }
-  .verify-panel.is-warn{ background:var(--warn-soft); color:var(--warn); border:1px solid rgba(154,106,24,.25); }
-  .verify-icon{ font-size:2.6rem; line-height:1; }
-  .verify-title{ font-family:'Fraunces',serif; font-weight:700; font-size:1.3rem; margin:0; }
-  .verify-sub{ font-size:.85rem; margin:0; opacity:.8; }
-  .verify-student{
-    display:flex; gap:12px; align-items:center;
-    background:rgba(255,255,255,.75); backdrop-filter:blur(4px);
-    padding:12px 18px; border-radius:14px; margin-top:4px; color:var(--ink); text-align:left;
-    box-shadow:var(--shadow-sm);
-  }
-  .verify-student img{ width:50px; height:50px; border-radius:50%; object-fit:cover; border:2px solid var(--line); }
+  .login-brand{text-align:center; animation:slideUp .5s ease both; position:relative; z-index:1;}
+  .login-brand .b-icon{font-size:3.2rem; display:block; filter:drop-shadow(0 4px 12px rgba(201,123,46,.4));}
+  .login-brand h1{font-size:2.2rem; font-weight:900; letter-spacing:-.02em;}
+  .login-brand p{color:var(--muted); font-size:.9rem; margin-top:.2rem;}
 
-  /* ---------- LOG ---------- */
-  .log-section{ margin-top:28px; }
-  .log-header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
-  .log-header h3{ font-family:'Fraunces',serif; font-size:1rem; margin:0; }
-  .log-clear{ font-size:.72rem; }
-  .logrow{
-    display:flex; align-items:center; gap:10px; padding:10px 12px;
-    border-radius:10px; font-size:.84rem; transition:background .1s;
-    border:1px solid transparent;
+  .type-toggle{
+    display:flex; gap:.4rem; background:var(--mist); border:1.5px solid var(--border); border-radius:50px;
+    padding:.4rem; animation:slideUp .5s .1s ease both; position:relative; z-index:1; flex-wrap:wrap; justify-content:center;
   }
-  .logrow:hover{ background:var(--paper-dim); border-color:var(--line); }
-  .logdot{ width:8px; height:8px; border-radius:50%; flex-shrink:0; }
-  .logdot.is-ok{ background:var(--ok); }
-  .logdot.is-off{ background:var(--danger); }
-  .logdot.is-warn{ background:var(--warn); }
-  .logtime{ color:var(--slate); min-width:60px; font-size:.78rem; }
-  .logname{ flex:1; font-weight:500; }
-  .logstatus{ font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.04em; padding:3px 10px; border-radius:999px; }
-  .logstatus.is-ok{ background:var(--ok-soft); color:var(--ok); }
-  .logstatus.is-off{ background:var(--danger-soft); color:var(--danger); }
-  .logstatus.is-warn{ background:var(--warn-soft); color:var(--warn); }
+  .tg-btn{
+    display:flex; align-items:center; gap:.45rem; padding:.6rem 1.2rem; border:none; background:transparent;
+    border-radius:50px; font-family:var(--body); font-size:.86rem; font-weight:500; color:var(--muted);
+    cursor:pointer; transition:var(--tr);
+  }
+  .tg-btn.active{background:var(--amber); color:#fff; box-shadow:0 2px 12px rgba(201,123,46,.35);}
+  .tg-btn[data-type="portaria"].active{background:var(--ink);}
 
-  /* ---------- TOAST ---------- */
+  .login-card{
+    background:#fff; border:1.5px solid var(--border); border-radius:var(--r-lg); padding:2.1rem 2.2rem;
+    width:100%; max-width:420px; box-shadow:var(--sh-md); animation:slideUp .5s .15s ease both; position:relative; z-index:1;
+  }
+  .login-card h2{font-size:1.35rem; margin-bottom:1.5rem;}
+  .login-note{text-align:center; font-size:.78rem; color:var(--muted); margin-top:.7rem;}
+  .login-footer{font-size:.75rem; color:#B0A090; text-align:center; animation:slideUp .5s .25s ease both; position:relative; z-index:1;}
   .toast{
-    position:fixed; bottom:24px; right:24px; z-index:999;
-    background:var(--ink); color:#fff; padding:12px 20px;
-    border-radius:12px; font-size:.84rem; font-weight:500;
-    box-shadow:var(--shadow-lg); transform:translateY(80px); opacity:0;
-    transition:all .3s cubic-bezier(.34,1.56,.64,1);
-    display:flex; align-items:center; gap:8px; max-width:300px;
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:var(--ink); color:#fff;
+    padding:.8rem 1.4rem; border-radius:var(--r-sm); font-size:.88rem; box-shadow:var(--sh-md); z-index:500;
+    opacity:0; transition:opacity .25s ease, transform .25s ease; pointer-events:none;
   }
-  .toast.show{ transform:translateY(0); opacity:1; }
-  .toast.toast-ok{ background:var(--ok); }
-  .toast.toast-err{ background:var(--danger); }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(-6px);}
+  .toast.err{background:var(--rust);}
+  .toast.ok{background:var(--sage);}
 
-  /* ---------- MODAL ---------- */
-  .modal-overlay{
-    position:fixed; inset:0; background:rgba(16,27,51,.55); z-index:998;
-    display:flex; align-items:center; justify-content:center; padding:20px;
-    opacity:0; pointer-events:none; transition:opacity .2s;
-    backdrop-filter:blur(3px);
+  /* ===================== TOPO DAS TELAS INTERNAS ===================== */
+  .top-bar{
+    position:sticky; top:0; z-index:50; background:#fffdfa; border-bottom:1px solid var(--border);
+    padding:16px 24px; display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap;
   }
-  .modal-overlay.open{ opacity:1; pointer-events:auto; }
-  .modal{
-    background:var(--paper-bright); border-radius:var(--radius-lg); padding:32px;
-    max-width:380px; width:100%; box-shadow:var(--shadow-lg);
-    transform:scale(.95); transition:transform .2s;
+  .top-bar .tb-brand{display:flex; align-items:center; gap:10px;}
+  .top-bar .tb-icon{font-size:1.5rem;}
+  .top-bar h1{font-size:1.25rem;}
+  .top-bar .tb-sub{font-size:.78rem; color:var(--muted); margin-top:1px;}
+  .app{max-width:980px; margin:0 auto; padding:28px 20px 60px;}
+  .section-eyebrow{
+    font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--amber-dk); margin:0 0 4px;
   }
-  .modal-overlay.open .modal{ transform:scale(1); }
-  .modal h3{ font-family:'Fraunces',serif; font-size:1.2rem; margin:0 0 8px; }
-  .modal p{ font-size:.88rem; color:var(--slate); margin:0 0 20px; }
-  .modal input{ width:100%; font-size:.95rem; padding:10px; border:1px solid var(--line); border-radius:10px; margin-bottom:16px; }
-  .modal input:focus{ outline:none; border-color:var(--gold); }
-  .modal-actions{ display:flex; gap:10px; justify-content:flex-end; }
+  .section-title{font-size:1.4rem; margin:0 0 18px; color:var(--ink);}
+  .section-title small{display:block; font-family:var(--body); font-weight:400; font-size:13px; color:var(--muted); margin-top:4px;}
 
-  /* ---------- FOOTER ---------- */
-  .appfoot{
-    text-align:center; color:var(--slate-light); font-size:.72rem;
-    padding:28px 10px; max-width:600px; margin:0 auto; line-height:1.6;
-  }
-  .appfoot a{ color:var(--slate); }
-
-  /* ---------- RESPONSIVE ---------- */
-  @media (max-width:680px){
-    .form-grid{ grid-template-columns:1fr; }
-    .form-row2{ grid-template-columns:1fr; }
-    .topbar{ border-radius:var(--radius); padding:14px 16px; }
-    .tabs{ width:100%; overflow-x:auto; }
-    .tab-btn{ flex:1; text-align:center; justify-content:center; font-size:.75rem; padding:8px 10px; }
-    .idcard{ width:100%; max-width:320px; }
-    .stats-row{ grid-template-columns:repeat(3,1fr); gap:10px; }
-    .stat-num{ font-size:1.5rem; }
-    .section-title{ font-size:1.3rem; }
-    .card{ padding:20px; }
-    .gate-card{ padding:32px 22px 28px; }
+  .card-block{
+    background:#fff; border:1.5px solid var(--border); border-radius:var(--r); padding:24px; box-shadow:var(--sh-sm); margin-bottom:24px;
   }
 
-  @media (prefers-reduced-motion: reduce){ *{ transition:none !important; animation:none !important; } }
+  .form-msg{font-size:13px; padding:10px 14px; border-radius:8px; margin-bottom:14px; display:none;}
+  .form-msg.show{display:block;}
+  .form-msg.error{background:var(--rust-lt); color:var(--rust);}
+  .form-msg.ok{background:var(--sage-lt); color:var(--sage);}
 
-  @media print{
-    body *{ visibility:hidden; }
-    #idcardPrint, #idcardPrint *{ visibility:visible; }
-    #idcardPrint{ position:absolute; top:0; left:0; margin:0; box-shadow:none; }
+  .form-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:2px 16px;}
+  .form-grid .field-group.full{grid-column:1/-1;}
+  .form-actions{display:flex; gap:10px; align-items:center;}
+
+  .list-toolbar{display:flex; justify-content:space-between; align-items:center; gap:12px; margin:28px 0 14px; flex-wrap:wrap;}
+  .list-toolbar input{border:1.5px solid var(--border); border-radius:var(--r-sm); padding:9px 12px; font-size:13px; min-width:220px;}
+  .stat-pill{
+    font-family:var(--mono); font-size:12px; color:var(--muted); background:var(--mist); border:1px solid var(--border);
+    border-radius:20px; padding:5px 12px;
+  }
+  .table-wrap{overflow-x:auto; border:1.5px solid var(--border); border-radius:10px;}
+  table{width:100%; border-collapse:collapse; font-size:13px;}
+  thead th{
+    text-align:left; background:var(--mist); color:var(--label-c); font-size:11px; letter-spacing:.05em;
+    text-transform:uppercase; padding:10px 12px; border-bottom:1px solid var(--border);
+  }
+  tbody td{padding:11px 12px; border-bottom:1px solid #f1e8d8; vertical-align:middle;}
+  tbody tr:last-child td{border-bottom:none;}
+  .mono-cell{font-family:var(--mono); font-size:12.5px;}
+  .badge{display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:600; padding:4px 9px; border-radius:20px;}
+  .badge.ok{background:var(--sage-lt); color:var(--sage);}
+  .badge.bad{background:var(--rust-lt); color:var(--rust);}
+  .badge-dot{width:6px; height:6px; border-radius:50%; background:currentColor;}
+  .empty-row td{text-align:center; color:var(--muted); padding:30px 12px;}
+
+  /* ===================== CARTEIRINHA ===================== */
+  .card-wrap{display:flex; justify-content:center; padding:10px 0 6px;}
+  .id-card{
+    position:relative; width:340px; background:linear-gradient(165deg,#2D1F0E 0%, #46301c 100%);
+    border-radius:18px; padding:34px 24px 26px; color:#fff; box-shadow:var(--sh-lg); border:1px solid rgba(201,123,46,.4);
+  }
+  .id-card::before{
+    content:""; position:absolute; top:14px; left:50%; transform:translateX(-50%); width:46px; height:14px;
+    border-radius:0 0 14px 14px; background:var(--cream); box-shadow:inset 0 -4px 6px rgba(0,0,0,.18);
+  }
+  .id-eyebrow{font-family:var(--mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:#E3B566; text-align:center; margin:6px 0 18px;}
+  .id-top{display:flex; align-items:center; gap:14px; margin-bottom:18px;}
+  .id-avatar{
+    width:58px; height:58px; border-radius:50%; background:rgba(201,123,46,.22); border:1.5px solid #E3B566;
+    display:flex; align-items:center; justify-content:center; font-family:var(--display); font-weight:700; font-size:20px; color:#E3B566; flex-shrink:0;
+  }
+  .id-name{font-family:var(--display); font-weight:700; font-size:18px; line-height:1.2;}
+  .id-turma{font-size:12.5px; color:#d8c9b3; margin-top:2px;}
+  .id-divider{height:1px; background:rgba(255,255,255,.14); margin:16px 0;}
+  .id-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px 10px; margin-bottom:18px;}
+  .id-field label{display:block; font-size:9.5px; letter-spacing:.08em; text-transform:uppercase; color:#c1ab8c; margin-bottom:3px;}
+  .id-field div{font-family:var(--mono); font-size:13px; color:#fff;}
+  .id-bottom{display:flex; align-items:flex-end; justify-content:space-between;}
+  #qrcode-card{background:#fff; padding:6px; border-radius:8px; line-height:0;}
+  .stamp{
+    font-family:var(--display); font-weight:700; font-size:13px; letter-spacing:.05em; padding:7px 14px;
+    border-radius:8px; border:2px solid currentColor; transform:rotate(-6deg); text-align:center;
+  }
+  .stamp.ok{color:#7be3ad;}
+  .stamp.bad{color:#f29b9b;}
+  .id-reason{font-size:11px; color:#f0b3b3; margin-top:8px; text-align:right;}
+
+  /* ===================== PORTARIA ===================== */
+  .porta-search{display:flex; gap:10px; margin-bottom:24px;}
+  .porta-search input{flex:1; border:2px solid var(--border); border-radius:10px; padding:16px 18px; font-size:20px; font-family:var(--mono);}
+  .porta-search input:focus{border-color:var(--amber);}
+  .btn-verify{background:var(--ink); color:#fff; font-size:15px; padding:0 26px; border-radius:10px;}
+  .btn-verify:hover{background:#46301c;}
+
+  .result-panel{border-radius:16px; padding:36px 28px; text-align:center; background:var(--mist); border:2px dashed var(--border); transition:background .25s ease;}
+  .result-panel .ph-icon{font-size:34px; margin-bottom:8px; opacity:.4;}
+  .result-panel .ph-text{color:var(--muted); font-size:14px;}
+  .result-panel.ok{background:var(--sage-lt); border:2px solid var(--sage);}
+  .result-panel.bad{background:var(--rust-lt); border:2px solid var(--rust);}
+  .result-panel.warn{background:var(--amber-lt); border:2px solid var(--amber-dk);}
+  .result-stamp{
+    display:inline-block; font-family:var(--display); font-weight:700; font-size:30px; letter-spacing:.03em;
+    padding:8px 26px; border-radius:10px; border:3px solid currentColor; transform:rotate(-4deg); margin-bottom:16px;
+  }
+  .result-panel.ok .result-stamp{color:var(--sage);}
+  .result-panel.bad .result-stamp{color:var(--rust);}
+  .result-panel.warn .result-stamp{color:var(--amber-dk);}
+  @media (prefers-reduced-motion: no-preference){ .result-stamp.animate{animation:stampIn .28s ease-out;} }
+  .result-name{font-family:var(--display); font-weight:700; font-size:22px; color:var(--ink); margin-bottom:4px;}
+  .result-meta{font-size:14px; color:var(--muted); margin-bottom:2px;}
+  .result-extra{font-size:13px; color:var(--muted); margin-top:10px;}
+  .porta-actions{display:flex; justify-content:center; margin-top:18px;}
+  .log-title{font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:28px 0 10px;}
+  .log-list{list-style:none; font-size:13px;}
+  .log-list li{display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #f1e8d8; color:var(--muted);}
+  .log-list .log-status{font-weight:600;}
+  .log-list .log-status.ok{color:var(--sage);}
+  .log-list .log-status.bad{color:var(--rust);}
+
+  @media (max-width:640px){
+    .form-grid{grid-template-columns:1fr;}
+    .id-card{width:100%; max-width:340px;}
+    .porta-search{flex-direction:column;}
+    .btn-verify{padding:14px;}
   }
 </style>
 </head>
 <body>
-<div class="app">
 
-  <header class="topbar">
-    <div class="brand">
-      <svg class="crest" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M24 4 L42 11 V24c0 12-8 18-18 20C14 42 6 36 6 24V11 Z" fill="rgba(255,255,255,0.1)" stroke="#C8A04B" stroke-width="2"/>
-        <path d="M24 14 l4 8 9 1-7 6 2 9-8-5-8 5 2-9-7-6 9-1z" fill="#C8A04B"/>
-      </svg>
-      <div class="brand-text">
-        <input id="escolaNomeInput" class="brand-input" oninput="state.escolaNome=this.value; saveState();" aria-label="Nome da escola" placeholder="Nome da escola">
-        <p class="subtitle">Sistema de carteirinha digital</p>
+<!-- ═══════════════════ TELA: LOGIN ═══════════════════ -->
+<div id="screen-login">
+  <div class="bg-c1"></div>
+  <div class="bg-c2"></div>
+  <div class="bg-grid"></div>
+
+  <div class="login-brand">
+    <span class="b-icon">🪪</span>
+    <h1 id="loginSchoolTitle">Carteirinha Digital</h1>
+    <p>Identificação do aluno trabalhador</p>
+  </div>
+
+  <div class="type-toggle">
+    <button class="tg-btn active" id="btnAluno" data-type="aluno" onclick="switchType('aluno')">🪪 Sou Aluno</button>
+    <button class="tg-btn" id="btnSecretaria" data-type="secretaria" onclick="switchType('secretaria')">🏫 Secretaria</button>
+    <button class="tg-btn" id="btnPortaria" data-type="portaria" onclick="switchType('portaria')">🛡️ Portaria</button>
+  </div>
+
+  <!-- Form Aluno -->
+  <div class="login-card" id="formAluno">
+    <h2>Minha carteirinha</h2>
+    <div class="field-group">
+      <label for="loginMatricula">Matrícula</label>
+      <input type="text" id="loginMatricula" placeholder="Digite sua matrícula" autocomplete="off" onkeydown="if(event.key==='Enter')loginAluno()">
+    </div>
+    <button class="btn btn-primary btn-full" onclick="loginAluno()">Ver minha carteirinha</button>
+    <p class="login-note">Sua matrícula é cadastrada pela secretaria</p>
+  </div>
+
+  <!-- Form Secretaria -->
+  <div class="login-card hidden" id="formSecretaria">
+    <h2>Acesso da secretaria</h2>
+    <div class="hint-box hidden" id="secretariaHint"></div>
+    <div class="field-group">
+      <label id="secretariaSenhaLabel">Senha de acesso</label>
+      <div class="pass-wrap">
+        <input type="password" id="secretariaSenha" placeholder="••••••••" onkeydown="if(event.key==='Enter')loginSecretaria()">
+        <button class="eye-btn" onclick="togglePass('secretariaSenha')" aria-label="Mostrar ou ocultar senha">👁</button>
       </div>
     </div>
-    <nav class="tabs">
-      <button class="tab-btn active" data-tab="secretaria" onclick="showTab('secretaria')"><span class="tab-icon">🏫</span> Secretaria</button>
-      <button class="tab-btn" data-tab="carteirinha" onclick="showTab('carteirinha')"><span class="tab-icon">🪪</span> Carteirinha</button>
-      <button class="tab-btn" data-tab="portaria" onclick="showTab('portaria')"><span class="tab-icon">🚪</span> Portaria</button>
-    </nav>
-  </header>
-
-  <main>
-
-    <!-- ===================== SECRETARIA ===================== -->
-    <section class="tab-panel" data-tab="secretaria" id="panelSecretaria">
-
-      <div id="secGate" class="gate-wrap">
-        <div class="gate-card">
-          <div class="gate-badge">🔒</div>
-          <h2>Acesso restrito</h2>
-          <p>Digite o PIN da secretaria para cadastrar e gerenciar os alunos.</p>
-          <div class="pin-group">
-            <input id="pinInput" class="pin-input" type="password" inputmode="numeric" maxlength="6" placeholder="••••" onkeydown="if(event.key==='Enter') tryLoginSec()">
-            <button class="pin-toggle" onclick="togglePinVisibility()" title="Mostrar/ocultar PIN" type="button">👁</button>
-          </div>
-          <button class="btn-gold" onclick="tryLoginSec()" style="width:100%;">Entrar na secretaria</button>
-          <p id="pinError" class="error hidden" style="justify-content:center;">PIN incorreto. Tente novamente.</p>
-          <p class="hint">PIN padrão: <strong>1234</strong><br>Altere em "Mudar PIN" após entrar.</p>
-        </div>
+    <div class="field-group hidden" id="secretariaSenhaConfRow">
+      <label>Confirmar senha</label>
+      <div class="pass-wrap">
+        <input type="password" id="secretariaSenhaConf" placeholder="Repita a senha" onkeydown="if(event.key==='Enter')loginSecretaria()">
+        <button class="eye-btn" onclick="togglePass('secretariaSenhaConf')" aria-label="Mostrar ou ocultar senha">👁</button>
       </div>
+    </div>
+    <button class="btn btn-secretaria btn-full" onclick="loginSecretaria()">Acessar painel</button>
+    <p class="login-note">Primeiro acesso? Crie a senha da secretaria</p>
+  </div>
 
-      <div id="secPanel" class="hidden">
-        <div class="sec-toolbar">
-          <div class="sec-toolbar-user">Secretaria ativa</div>
-          <div class="sec-toolbar-actions">
-            <button class="sec-action-btn" onclick="openChangePinModal()">🔑 Mudar PIN</button>
-            <button class="sec-action-btn" onclick="exportarBackup()">📥 Exportar backup</button>
-            <label class="sec-action-btn">📤 Importar backup<input type="file" accept="application/json" class="hidden-file" onchange="importarBackup(event)"></label>
-            <button class="sec-action-btn" onclick="carregarExemplo()">✨ Carregar exemplo</button>
-            <button class="sec-action-btn" style="color:var(--danger);" onclick="logoutSec()">🚪 Sair</button>
-          </div>
-        </div>
-
-        <div id="statsRow" class="stats-row">
-          <div class="stat-card">
-            <span class="stat-num" id="statTotal">0</span>
-            <span class="stat-label">Alunos cadastrados</span>
-          </div>
-          <div class="stat-card stat-ok">
-            <span class="stat-num" id="statAtivos">0</span>
-            <span class="stat-label">Ativos</span>
-          </div>
-          <div class="stat-card stat-off">
-            <span class="stat-num" id="statInativos">0</span>
-            <span class="stat-label">Inativos</span>
-          </div>
-        </div>
-
-        <div class="card" id="formCard">
-          <h3 id="formTitulo">Cadastrar novo aluno</h3>
-          <div class="form-grid">
-            <div class="photo-upload">
-              <label for="fotoInput">
-                <div class="photo-ring"><img id="fotoPreview" src="" alt="Foto do aluno"></div>
-                <span>Clique para<br>adicionar foto</span>
-              </label>
-              <input id="fotoInput" type="file" accept="image/*" class="hidden-file" onchange="onFotoChange(event)">
-            </div>
-            <div class="form-fields">
-              <label>Nome completo<input id="inputNome" type="text" placeholder="Ex: Ana Lima Santos"></label>
-              <div class="form-row2">
-                <label>Matrícula / RA<input id="inputMatricula" type="text" placeholder="Ex: 2026001"></label>
-                <label>Turma<input id="inputTurma" type="text" placeholder="Ex: 9º Ano A"></label>
-              </div>
-              <label>Telefone do responsável (opcional)<input id="inputTelefone" type="text" placeholder="(00) 00000-0000"></label>
-            </div>
-          </div>
-          <p id="formMsg" class="error hidden"></p>
-          <div class="form-actions">
-            <button class="btn-primary" id="btnSalvarAluno" onclick="salvarAluno()">Salvar aluno</button>
-            <button class="btn-secondary hidden" id="btnCancelarEdicao" onclick="resetForm()">Cancelar edição</button>
-            <span class="save-indicator" id="saveIndicator">✓ Salvo!</span>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="section-header">
-            <div>
-              <h3 style="margin:0 0 4px;">Alunos cadastrados</h3>
-            </div>
-            <div class="list-controls">
-              <div class="search-wrap">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-                <input id="searchInput" type="text" placeholder="Buscar por nome, matrícula ou turma…" oninput="renderStudentsList()">
-              </div>
-              <select class="filter-select" id="filterStatus" onchange="renderStudentsList()">
-                <option value="">Todos</option>
-                <option value="ativo">Ativos</option>
-                <option value="inativo">Inativos</option>
-              </select>
-            </div>
-          </div>
-          <div class="table-container">
-            <table class="students-table">
-              <thead><tr><th></th><th>Aluno</th><th>Matrícula</th><th>Turma</th><th>Status</th><th></th></tr></thead>
-              <tbody id="studentsBody"></tbody>
-            </table>
-          </div>
-          <div id="studentsEmpty" class="empty-state hidden"></div>
-        </div>
+  <!-- Form Portaria -->
+  <div class="login-card hidden" id="formPortaria">
+    <h2>Acesso da portaria</h2>
+    <div class="hint-box hidden" id="portariaHint"></div>
+    <div class="field-group">
+      <label id="portariaSenhaLabel">Senha de acesso</label>
+      <div class="pass-wrap">
+        <input type="password" id="portariaSenha" placeholder="••••••••" onkeydown="if(event.key==='Enter')loginPortaria()">
+        <button class="eye-btn" onclick="togglePass('portariaSenha')" aria-label="Mostrar ou ocultar senha">👁</button>
       </div>
-    </section>
-
-    <!-- ===================== CARTEIRINHA ===================== -->
-    <section class="tab-panel hidden" data-tab="carteirinha" id="panelCarteirinha">
-      <div class="card centered-card">
-        <div class="section-header" style="justify-content:center;text-align:center;flex-direction:column;gap:6px;">
-          <h2 style="margin:0;">Minha carteirinha digital</h2>
-          <p class="muted" style="margin:0;">Digite sua matrícula para visualizar sua carteirinha</p>
-        </div>
-        <div class="search-bar" style="margin-top:16px;">
-          <input id="matriculaInputCard" type="text" placeholder="Número de matrícula" onkeydown="if(event.key==='Enter') buscarCarteirinha()">
-          <button class="btn-primary" onclick="buscarCarteirinha()">Ver carteirinha</button>
-        </div>
-        <div id="cardResult" class="card-result"></div>
+    </div>
+    <div class="field-group hidden" id="portariaSenhaConfRow">
+      <label>Confirmar senha</label>
+      <div class="pass-wrap">
+        <input type="password" id="portariaSenhaConf" placeholder="Repita a senha" onkeydown="if(event.key==='Enter')loginPortaria()">
+        <button class="eye-btn" onclick="togglePass('portariaSenhaConf')" aria-label="Mostrar ou ocultar senha">👁</button>
       </div>
-    </section>
+    </div>
+    <button class="btn btn-portaria btn-full" onclick="loginPortaria()">Acessar verificação</button>
+    <p class="login-note">A secretaria pode redefinir esta senha quando precisar</p>
+  </div>
 
-    <!-- ===================== PORTARIA ===================== -->
-    <section class="tab-panel hidden" data-tab="portaria" id="panelPortaria">
-      <div class="card centered-card">
-        <div class="section-header" style="justify-content:center;text-align:center;flex-direction:column;gap:6px;">
-          <h2 style="margin:0;">Verificação na portaria</h2>
-          <p class="muted" style="margin:0;">Escaneie o QR code ou digite a matrícula do aluno</p>
-        </div>
-
-        <div class="scan-area">
-          <button id="btnStartScan" class="btn-secondary" onclick="startScanner()">📷 Escanear QR code</button>
-          <div id="scanWrap" class="scan-wrap hidden">
-            <video id="scanVideo" playsinline muted></video>
-            <span class="scan-line"></span>
-            <span class="corner corner-tl"></span><span class="corner corner-tr"></span>
-            <span class="corner corner-bl"></span><span class="corner corner-br"></span>
-          </div>
-          <button id="btnStopScan" class="btn-secondary hidden" onclick="stopScanner()">⏹ Parar câmera</button>
-          <canvas id="scanCanvas" class="hidden"></canvas>
-          <p id="scanStatus" class="muted small" style="margin-top:8px;"></p>
-        </div>
-
-        <div class="portaria-divider">ou digite a matrícula</div>
-
-        <div class="search-bar">
-          <input id="matriculaInputPortaria" type="text" placeholder="Número de matrícula" onkeydown="handlePortariaKey(event)">
-          <button class="btn-primary" onclick="verificar(document.getElementById('matriculaInputPortaria').value)">Verificar</button>
-        </div>
-
-        <div id="verifyResult" class="verify-panel idle">
-          <div class="verify-icon">🔍</div>
-          <p class="muted" style="margin:0;">Aguardando verificação…</p>
-        </div>
-
-        <div class="log-section">
-          <div class="log-header">
-            <h3>Registro de acessos</h3>
-            <button class="link-btn log-clear" onclick="clearLog()">Limpar registro</button>
-          </div>
-          <div id="logList"></div>
-        </div>
-      </div>
-    </section>
-
-  </main>
-
-  <footer class="appfoot">
-    <p>Os dados ficam salvos apenas neste navegador. Use "Exportar backup" na secretaria para guardar uma cópia ou transferir para outro computador.</p>
-  </footer>
+  <p class="login-footer">Carteirinha Digital · acesso restrito por papel</p>
 </div>
 
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
+<!-- ═══════════════════ TELA: SECRETARIA ═══════════════════ -->
+<div id="screen-secretaria" class="hidden">
+  <div class="top-bar">
+    <div class="tb-brand">
+      <span class="tb-icon">🏫</span>
+      <div>
+        <h1>Painel da secretaria</h1>
+        <div class="tb-sub" id="secretariaSchoolSub">Cadastro de alunos trabalhadores</div>
+      </div>
+    </div>
+    <button class="btn btn-ghost" onclick="logout()">Sair</button>
+  </div>
 
-<!-- MODAL: Mudar PIN -->
-<div class="modal-overlay" id="pinModal" onclick="if(event.target===this) closePinModal()">
-  <div class="modal">
-    <h3>🔑 Mudar PIN</h3>
-    <p>Digite o PIN atual e escolha um novo PIN de 4 a 6 dígitos.</p>
-    <input type="password" inputmode="numeric" maxlength="6" id="modalPinAtual" placeholder="PIN atual">
-    <input type="password" inputmode="numeric" maxlength="6" id="modalPinNovo" placeholder="Novo PIN (4–6 dígitos)">
-    <input type="password" inputmode="numeric" maxlength="6" id="modalPinConfirm" placeholder="Confirme o novo PIN">
-    <p id="modalPinErr" class="error hidden"></p>
-    <div class="modal-actions">
-      <button class="btn-secondary" onclick="closePinModal()">Cancelar</button>
-      <button class="btn-primary" onclick="confirmarMudancaPin()">Salvar PIN</button>
+  <div class="app">
+    <div class="card-block">
+      <p class="section-eyebrow">Cadastro</p>
+      <h2 class="section-title">Cadastrar aluno trabalhador
+        <small>Alunos cadastrados aqui poderão ver a carteirinha digital e serão reconhecidos na portaria.</small>
+      </h2>
+
+      <div class="form-msg" id="formMsg" role="alert"></div>
+
+      <form id="alunoForm">
+        <input type="hidden" id="editId">
+        <div class="form-grid">
+          <div class="field-group full">
+            <label for="f-nome">Nome completo</label>
+            <input type="text" id="f-nome" required placeholder="Ex: Maria Souza Lima">
+          </div>
+          <div class="field-group">
+            <label for="f-matricula">Matrícula <span class="opt">(identificador único)</span></label>
+            <input type="text" id="f-matricula" required placeholder="Ex: 2026-0142">
+          </div>
+          <div class="field-group">
+            <label for="f-turma">Turma</label>
+            <input type="text" id="f-turma" required placeholder="Ex: 3º Ano B">
+          </div>
+          <div class="field-group">
+            <label for="f-turno">Turno</label>
+            <select id="f-turno" required>
+              <option value="">Selecione</option>
+              <option>Manhã</option><option>Tarde</option><option>Noite</option><option>Integral</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label for="f-status">Situação do cadastro</label>
+            <select id="f-status" required>
+              <option value="Ativo">Ativo</option>
+              <option value="Suspenso">Suspenso</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label for="f-local">Local de trabalho <span class="opt">(opcional)</span></label>
+            <input type="text" id="f-local" placeholder="Ex: Padaria Bom Pão">
+          </div>
+          <div class="field-group">
+            <label for="f-horario">Horário de entrada autorizado <span class="opt">(opcional)</span></label>
+            <input type="time" id="f-horario">
+          </div>
+          <div class="field-group full">
+            <label for="f-validade">Validade do cadastro <span class="opt">(opcional — em branco para sem prazo)</span></label>
+            <input type="date" id="f-validade">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" id="submitBtn">Cadastrar aluno</button>
+          <button type="button" class="btn btn-ghost" id="cancelEditBtn" style="display:none;">Cancelar edição</button>
+        </div>
+      </form>
+
+      <div class="list-toolbar">
+        <input type="text" id="searchAlunos" placeholder="Buscar por nome ou matrícula…">
+        <span class="stat-pill" id="statPill">carregando…</span>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Nome</th><th>Matrícula</th><th>Turma</th><th>Turno</th><th>Validade</th><th>Status</th><th>Ações</th></tr></thead>
+          <tbody id="alunosTbody"><tr class="empty-row"><td colspan="7">Carregando alunos…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card-block">
+      <p class="section-eyebrow">Segurança</p>
+      <h2 class="section-title">Configurações de acesso
+        <small>Defina o nome da escola e gerencie as senhas de entrada do sistema.</small>
+      </h2>
+
+      <div class="form-msg" id="configMsg" role="alert"></div>
+
+      <div class="form-grid">
+        <div class="field-group full">
+          <label for="cfgEscolaNome">Nome da escola <span class="opt">(aparece no topo do sistema)</span></label>
+          <input type="text" id="cfgEscolaNome" placeholder="Ex: Escola Estadual Anita Garibaldi">
+        </div>
+        <div class="field-group">
+          <label for="cfgSecretariaNova">Trocar minha senha (secretaria)</label>
+          <input type="password" id="cfgSecretariaNova" placeholder="Nova senha (mín. 4 caracteres)">
+        </div>
+        <div class="field-group">
+          <label for="cfgSecretariaConf">Confirmar nova senha</label>
+          <input type="password" id="cfgSecretariaConf" placeholder="Repita a nova senha">
+        </div>
+        <div class="field-group">
+          <label for="cfgPortariaNova">Redefinir senha da portaria</label>
+          <input type="password" id="cfgPortariaNova" placeholder="Nova senha (mín. 4 caracteres)">
+        </div>
+        <div class="field-group">
+          <label for="cfgPortariaConf">Confirmar nova senha</label>
+          <input type="password" id="cfgPortariaConf" placeholder="Repita a nova senha">
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-ghost" onclick="salvarNomeEscola()">Salvar nome da escola</button>
+        <button type="button" class="btn btn-ghost" onclick="trocarSenhaSecretaria()">Trocar minha senha</button>
+        <button type="button" class="btn btn-ghost" onclick="redefinirSenhaPortaria()">Redefinir senha da portaria</button>
+      </div>
     </div>
   </div>
 </div>
 
+<!-- ═══════════════════ TELA: CARTEIRINHA DO ALUNO ═══════════════════ -->
+<div id="screen-carteirinha" class="hidden">
+  <div class="top-bar">
+    <div class="tb-brand">
+      <span class="tb-icon">🪪</span>
+      <div>
+        <h1>Minha carteirinha</h1>
+        <div class="tb-sub">Mostre esta tela ao porteiro na entrada</div>
+      </div>
+    </div>
+    <button class="btn btn-ghost" onclick="logout()">Sair</button>
+  </div>
+  <div class="app">
+    <div id="carteirinhaContent"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════ TELA: PORTARIA ═══════════════════ -->
+<div id="screen-portaria" class="hidden">
+  <div class="top-bar">
+    <div class="tb-brand">
+      <span class="tb-icon">🛡️</span>
+      <div>
+        <h1>Verificar na entrada</h1>
+        <div class="tb-sub">Confirme a matrícula antes de liberar a entrada</div>
+      </div>
+    </div>
+    <button class="btn btn-ghost" onclick="logout()">Sair</button>
+  </div>
+  <div class="app">
+    <div class="porta-search">
+      <input type="text" id="portaInput" placeholder="Matrícula do aluno" autocomplete="off">
+      <button class="btn btn-verify" id="portaBtn">Verificar</button>
+    </div>
+
+    <div class="result-panel" id="resultPanel" aria-live="polite">
+      <div class="ph-icon">🪪</div>
+      <div class="ph-text">Aguardando verificação</div>
+    </div>
+
+    <div class="porta-actions">
+      <button class="btn btn-ghost" id="portaClearBtn">Limpar e verificar próximo</button>
+    </div>
+
+    <p class="log-title">Verificações recentes nesta sessão</p>
+    <ul class="log-list" id="logList"></ul>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script>
-  /* ---------------------------------------------------------
-     Estado e persistência
-  --------------------------------------------------------- */
-  const STORAGE_KEY = 'carteirinha_escola_v1';
-  const PIN_KEY = 'carteirinha_escola_pin_v1';
-  const AVATAR_PLACEHOLDER = 'data:image/svg+xml;utf8,' + encodeURIComponent(
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">'+
-    '<rect width="100" height="100" fill="#EDE8D8"/>'+
-    '<circle cx="50" cy="38" r="18" fill="#B9AE92"/>'+
-    '<path d="M50 60c-22 0-34 14-34 30v10h68v-10c0-16-12-30-34-30z" fill="#B9AE92"/>'+
-    '</svg>'
-  );
+(function(){
+  "use strict";
 
-  let state = loadState();
-  let editingId = null;
-  let pendingFotoDataUrl = null;
-  let scannerStream = null;
-  let scanning = false;
+  // ---------- STORAGE KEYS ----------
+  const ALUNOS_KEY = "alunos-trabalhadores";
+  const CONFIG_KEY = "config-escola-nome";
+  const SECRETARIA_SENHA_KEY = "secretaria-senha-hash";
+  const PORTARIA_SENHA_KEY = "portaria-senha-hash";
 
-  function loadState(){
+  // ---------- STORAGE HELPERS ----------
+  async function storageGet(key){
     try{
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if(raw) return JSON.parse(raw);
-    }catch(e){}
-    return { escolaNome:'Minha Escola', alunos:[], acessos:[] };
+      const r = await window.storage.get(key, true);
+      return (r && r.value !== undefined) ? r.value : null;
+    }catch(e){ return null; }
   }
-  function saveState(){
-    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+  async function storageSet(key, value){
+    try{ const r = await window.storage.set(key, value, true); return !!r; }
+    catch(e){ return false; }
   }
-  function getPin(){ return localStorage.getItem(PIN_KEY) || '1234'; }
-  function setPin(p){ localStorage.setItem(PIN_KEY, p); }
-  function uid(){ return 'a_' + Math.random().toString(36).slice(2,10) + Date.now().toString(36); }
+  async function loadAlunos(){
+    const v = await storageGet(ALUNOS_KEY);
+    return v ? JSON.parse(v) : [];
+  }
+  async function saveAlunos(list){ return storageSet(ALUNOS_KEY, JSON.stringify(list)); }
+
+  // ---------- HASH DE SENHA — SHA-256 via Web Crypto API ----------
+  async function hashSenha(senha){
+    const data = new TextEncoder().encode(senha + "_carteirinha_salt");
+    const buf = await crypto.subtle.digest("SHA-256", data);
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,"0")).join("");
+  }
+  async function temSenha(key){
+    const v = await storageGet(key);
+    return !!v;
+  }
+  async function salvarSenha(key, senha){
+    const h = "sha256:" + await hashSenha(senha);
+    return storageSet(key, h);
+  }
+  async function validarSenha(key, senhaDigitada){
+    const armazenada = await storageGet(key);
+    if(!armazenada) return null; // sem senha cadastrada ainda
+    const h = "sha256:" + await hashSenha(senhaDigitada);
+    return h === armazenada;
+  }
+
+  // ---------- UTILS ----------
+  function uid(){ return "a" + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+  function initials(nome){
+    const parts = nome.trim().split(/\s+/).filter(Boolean);
+    if(parts.length === 0) return "?";
+    if(parts.length === 1) return parts[0].slice(0,2).toUpperCase();
+    return (parts[0][0] + parts[parts.length-1][0]).toUpperCase();
+  }
+  function formatDateBR(iso){
+    if(!iso) return "—";
+    const [y,m,d] = iso.split("-");
+    return `${d}/${m}/${y}`;
+  }
+  function todayMidnight(){ const d = new Date(); d.setHours(0,0,0,0); return d; }
+  function computeStatus(aluno){
+    if(aluno.statusCadastro === "Suspenso") return { ativo:false, motivo:"Cadastro suspenso pela secretaria" };
+    if(aluno.validade){
+      const val = new Date(aluno.validade + "T00:00:00");
+      if(val < todayMidnight()) return { ativo:false, motivo:"Cadastro expirado em " + formatDateBR(aluno.validade) };
+    }
+    return { ativo:true, motivo:"" };
+  }
   function escapeHtml(s){
-    return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
   }
-
-  /* ---------------------------------------------------------
-     Toast
-  --------------------------------------------------------- */
-  let toastTimer;
-  function showToast(msg, type=''){
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.className = 'toast' + (type ? ' toast-'+type : '') + ' show';
+  function shakeEl(el){
+    el.style.animation = "none"; void el.offsetHeight; el.style.animation = "shake .4s ease";
+  }
+  let toastTimer = null;
+  function toast(msg, kind){
+    const el = document.getElementById("toast");
+    el.textContent = msg;
+    el.className = "toast show" + (kind ? " " + kind : "");
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(()=>{ t.classList.remove('show'); }, 2800);
+    toastTimer = setTimeout(() => { el.className = "toast"; }, 3200);
+  }
+  window.togglePass = function(id){
+    const i = document.getElementById(id);
+    i.type = i.type === "password" ? "text" : "password";
+  };
+
+  // ---------- ESTADO ----------
+  let alunosCache = [];
+  let editingId = null;
+  let SESSION = null;
+  let schoolName = "";
+
+  // ---------- NOME DA ESCOLA ----------
+  async function refreshSchoolBranding(){
+    schoolName = await storageGet(CONFIG_KEY) || "";
+    document.getElementById("loginSchoolTitle").textContent = schoolName || "Carteirinha Digital";
+    document.getElementById("secretariaSchoolSub").textContent = schoolName
+      ? schoolName + " · Cadastro de alunos trabalhadores"
+      : "Cadastro de alunos trabalhadores";
+    const input = document.getElementById("cfgEscolaNome");
+    if(input) input.value = schoolName;
   }
 
-  /* ---------------------------------------------------------
-     Navegação entre abas
-  --------------------------------------------------------- */
-  function showTab(name){
-    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('hidden', p.dataset.tab!==name));
-    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===name));
-    if(name!=='portaria') stopScanner();
-    if(name==='portaria'){
-      setTimeout(()=>{ const i=document.getElementById('matriculaInputPortaria'); if(i) i.focus(); }, 60);
-    }
+  window.salvarNomeEscola = async function(){
+    const val = document.getElementById("cfgEscolaNome").value.trim();
+    await storageSet(CONFIG_KEY, val);
+    await refreshSchoolBranding();
+    showConfigMsg("Nome da escola atualizado.", "ok");
+  };
+
+  function showConfigMsg(text, kind){
+    const el = document.getElementById("configMsg");
+    el.textContent = text;
+    el.className = "form-msg show " + kind;
+    setTimeout(() => { el.className = "form-msg"; }, 3500);
   }
 
-  /* ---------------------------------------------------------
-     Secretaria — autenticação por PIN
-  --------------------------------------------------------- */
-  function togglePinVisibility(){
-    const input = document.getElementById('pinInput');
-    input.type = input.type === 'password' ? 'text' : 'password';
+  window.trocarSenhaSecretaria = async function(){
+    const nova = document.getElementById("cfgSecretariaNova").value;
+    const conf = document.getElementById("cfgSecretariaConf").value;
+    if(!nova || nova.length < 4){ showConfigMsg("A nova senha precisa ter no mínimo 4 caracteres.", "error"); return; }
+    if(nova !== conf){ showConfigMsg("As senhas não coincidem.", "error"); return; }
+    await salvarSenha(SECRETARIA_SENHA_KEY, nova);
+    document.getElementById("cfgSecretariaNova").value = "";
+    document.getElementById("cfgSecretariaConf").value = "";
+    showConfigMsg("Senha da secretaria atualizada.", "ok");
+  };
+
+  window.redefinirSenhaPortaria = async function(){
+    const nova = document.getElementById("cfgPortariaNova").value;
+    const conf = document.getElementById("cfgPortariaConf").value;
+    if(!nova || nova.length < 4){ showConfigMsg("A nova senha precisa ter no mínimo 4 caracteres.", "error"); return; }
+    if(nova !== conf){ showConfigMsg("As senhas não coincidem.", "error"); return; }
+    await salvarSenha(PORTARIA_SENHA_KEY, nova);
+    document.getElementById("cfgPortariaNova").value = "";
+    document.getElementById("cfgPortariaConf").value = "";
+    showConfigMsg("Senha da portaria redefinida.", "ok");
+  };
+
+  // ---------- TIPO DE LOGIN (toggle) ----------
+  window.switchType = async function(type){
+    const isAluno = type === "aluno", isSecretaria = type === "secretaria", isPortaria = type === "portaria";
+    document.getElementById("formAluno").classList.toggle("hidden", !isAluno);
+    document.getElementById("formSecretaria").classList.toggle("hidden", !isSecretaria);
+    document.getElementById("formPortaria").classList.toggle("hidden", !isPortaria);
+    document.getElementById("btnAluno").classList.toggle("active", isAluno);
+    document.getElementById("btnSecretaria").classList.toggle("active", isSecretaria);
+    document.getElementById("btnPortaria").classList.toggle("active", isPortaria);
+    if(isSecretaria) await atualizarDicaSecretaria();
+    if(isPortaria) await atualizarDicaPortaria();
+  };
+
+  async function atualizarDicaSecretaria(){
+    const hint = document.getElementById("secretariaHint");
+    const confRow = document.getElementById("secretariaSenhaConfRow");
+    const label = document.getElementById("secretariaSenhaLabel");
+    const existe = await temSenha(SECRETARIA_SENHA_KEY);
+    confRow.classList.toggle("hidden", existe);
+    label.textContent = existe ? "Senha de acesso" : "Criar senha (mín. 4 caracteres)";
+    if(existe){ hint.classList.add("hidden"); }
+    else{ hint.textContent = "⚠️ Nenhuma senha cadastrada ainda. Crie a senha da secretaria agora."; hint.classList.remove("hidden"); }
   }
-  function checkSecAuth(){ return sessionStorage.getItem('secAuth')==='1'; }
-  function renderSecretaria(){
-    const gate = document.getElementById('secGate');
-    const panel = document.getElementById('secPanel');
-    if(checkSecAuth()){
-      gate.classList.add('hidden');
-      panel.classList.remove('hidden');
-      renderStudentsList();
-      renderStats();
-    } else {
-      gate.classList.remove('hidden');
-      panel.classList.add('hidden');
-    }
-  }
-  function tryLoginSec(){
-    const input = document.getElementById('pinInput');
-    const err = document.getElementById('pinError');
-    if(input.value.trim() === getPin()){
-      sessionStorage.setItem('secAuth','1');
-      err.classList.add('hidden');
-      input.value='';
-      renderSecretaria();
-      showToast('Bem-vindo à secretaria ✓', 'ok');
-    } else {
-      err.classList.remove('hidden');
-      input.value='';
-      input.focus();
-      // Shake animation
-      input.style.animation = 'none';
-      input.offsetHeight;
-    }
-  }
-  function logoutSec(){
-    sessionStorage.removeItem('secAuth');
-    renderSecretaria();
-    showToast('Saiu da secretaria');
+  async function atualizarDicaPortaria(){
+    const hint = document.getElementById("portariaHint");
+    const confRow = document.getElementById("portariaSenhaConfRow");
+    const label = document.getElementById("portariaSenhaLabel");
+    const existe = await temSenha(PORTARIA_SENHA_KEY);
+    confRow.classList.toggle("hidden", existe);
+    label.textContent = existe ? "Senha de acesso" : "Criar senha (mín. 4 caracteres)";
+    if(existe){ hint.classList.add("hidden"); }
+    else{ hint.textContent = "⚠️ Nenhuma senha cadastrada ainda. Crie a senha da portaria agora."; hint.classList.remove("hidden"); }
   }
 
-  /* Modal de PIN */
-  function openChangePinModal(){
-    document.getElementById('modalPinAtual').value='';
-    document.getElementById('modalPinNovo').value='';
-    document.getElementById('modalPinConfirm').value='';
-    document.getElementById('modalPinErr').classList.add('hidden');
-    document.getElementById('pinModal').classList.add('open');
-    document.getElementById('modalPinAtual').focus();
-  }
-  function closePinModal(){
-    document.getElementById('pinModal').classList.remove('open');
-  }
-  function confirmarMudancaPin(){
-    const atual = document.getElementById('modalPinAtual').value;
-    const novo = document.getElementById('modalPinNovo').value;
-    const confirm = document.getElementById('modalPinConfirm').value;
-    const err = document.getElementById('modalPinErr');
-    if(atual !== getPin()){ err.textContent='PIN atual incorreto.'; err.classList.remove('hidden'); return; }
-    if(!/^\d{4,6}$/.test(novo)){ err.textContent='Novo PIN deve ter 4 a 6 dígitos.'; err.classList.remove('hidden'); return; }
-    if(novo !== confirm){ err.textContent='Os PINs não coincidem.'; err.classList.remove('hidden'); return; }
-    setPin(novo);
-    closePinModal();
-    showToast('PIN atualizado com sucesso ✓', 'ok');
-  }
-
-  /* ---------------------------------------------------------
-     Stats
-  --------------------------------------------------------- */
-  function renderStats(){
-    const total = state.alunos.length;
-    const ativos = state.alunos.filter(a=>a.status==='ativo').length;
-    document.getElementById('statTotal').textContent = total;
-    document.getElementById('statAtivos').textContent = ativos;
-    document.getElementById('statInativos').textContent = total - ativos;
-  }
-
-  /* ---------------------------------------------------------
-     Cadastro de alunos
-  --------------------------------------------------------- */
-  function onFotoChange(e){
-    const file = e.target.files[0];
-    if(!file) return;
-    const reader = new FileReader();
-    reader.onload = function(ev){
-      pendingFotoDataUrl = ev.target.result;
-      document.getElementById('fotoPreview').src = pendingFotoDataUrl;
-    };
-    reader.readAsDataURL(file);
-  }
-
-  function resetForm(){
-    editingId = null;
-    pendingFotoDataUrl = null;
-    document.getElementById('formTitulo').textContent = 'Cadastrar novo aluno';
-    document.getElementById('inputNome').value = '';
-    document.getElementById('inputMatricula').value = '';
-    document.getElementById('inputTurma').value = '';
-    document.getElementById('inputTelefone').value = '';
-    document.getElementById('fotoPreview').src = AVATAR_PLACEHOLDER;
-    document.getElementById('fotoInput').value = '';
-    document.getElementById('btnSalvarAluno').textContent = 'Salvar aluno';
-    document.getElementById('btnCancelarEdicao').classList.add('hidden');
-    document.getElementById('formMsg').classList.add('hidden');
-    document.getElementById('saveIndicator').classList.remove('show');
-  }
-
-  function salvarAluno(){
-    const nome = document.getElementById('inputNome').value.trim();
-    const matricula = document.getElementById('inputMatricula').value.trim();
-    const turma = document.getElementById('inputTurma').value.trim();
-    const telefone = document.getElementById('inputTelefone').value.trim();
-    const msg = document.getElementById('formMsg');
-
-    if(!nome || !matricula || !turma){
-      msg.textContent = 'Preencha nome, matrícula e turma.';
-      msg.classList.remove('hidden');
-      return;
-    }
-    const duplicado = state.alunos.find(a => a.matricula===matricula && a.id!==editingId);
-    if(duplicado){
-      msg.textContent = 'Já existe um aluno com essa matrícula.';
-      msg.classList.remove('hidden');
-      return;
-    }
-    msg.classList.add('hidden');
-
-    const isNew = !editingId;
-    if(editingId){
-      const a = state.alunos.find(x=>x.id===editingId);
-      a.nome=nome; a.matricula=matricula; a.turma=turma; a.telefone=telefone;
-      if(pendingFotoDataUrl) a.foto = pendingFotoDataUrl;
-    } else {
-      state.alunos.push({
-        id:uid(), nome, matricula, turma, telefone,
-        foto: pendingFotoDataUrl, status:'ativo', criadoEm: Date.now()
-      });
-    }
-    saveState();
-    const ind = document.getElementById('saveIndicator');
-    ind.classList.add('show');
-    setTimeout(()=>ind.classList.remove('show'), 2000);
-    resetForm();
-    renderStudentsList();
-    renderStats();
-    showToast(isNew ? `Aluno "${nome}" cadastrado ✓` : `Cadastro de "${nome}" atualizado ✓`, 'ok');
-  }
-
-  function editarAluno(id){
-    const a = state.alunos.find(x=>x.id===id);
-    if(!a) return;
-    editingId = id;
-    pendingFotoDataUrl = a.foto || null;
-    document.getElementById('formTitulo').textContent = 'Editar aluno';
-    document.getElementById('inputNome').value = a.nome;
-    document.getElementById('inputMatricula').value = a.matricula;
-    document.getElementById('inputTurma').value = a.turma;
-    document.getElementById('inputTelefone').value = a.telefone || '';
-    document.getElementById('fotoPreview').src = a.foto || AVATAR_PLACEHOLDER;
-    document.getElementById('btnSalvarAluno').textContent = 'Salvar alterações';
-    document.getElementById('btnCancelarEdicao').classList.remove('hidden');
-    document.getElementById('formCard').scrollIntoView({behavior:'smooth', block:'start'});
-  }
-
-  function excluirAluno(id){
-    const a = state.alunos.find(x=>x.id===id);
-    if(!a) return;
-    if(!confirm(`Excluir o cadastro de "${a.nome}"? Essa ação não pode ser desfeita.`)) return;
-    state.alunos = state.alunos.filter(x=>x.id!==id);
-    saveState();
-    if(editingId===id) resetForm();
-    renderStudentsList();
-    renderStats();
-    showToast(`Cadastro de "${a.nome}" removido`, 'err');
-  }
-
-  function toggleStatus(id){
-    const a = state.alunos.find(x=>x.id===id);
-    if(!a) return;
-    a.status = a.status==='ativo' ? 'inativo' : 'ativo';
-    saveState();
-    renderStudentsList();
-    renderStats();
-    showToast(`${a.nome}: status alterado para ${a.status}`);
-  }
-
-  function renderStudentsList(){
-    const tbody = document.getElementById('studentsBody');
-    const emptyEl = document.getElementById('studentsEmpty');
-    if(!tbody) return;
-    const term = (document.getElementById('searchInput')?.value || '').trim().toLowerCase();
-    const filterStatus = document.getElementById('filterStatus')?.value || '';
-    let lista = state.alunos.filter(a => {
-      const matchTerm = !term || a.nome.toLowerCase().includes(term) || a.matricula.toLowerCase().includes(term) || a.turma.toLowerCase().includes(term);
-      const matchStatus = !filterStatus || a.status === filterStatus;
-      return matchTerm && matchStatus;
-    });
-
-    if(state.alunos.length===0){
-      emptyEl.innerHTML = '<div class="empty-icon">🎓</div><p>Nenhum aluno cadastrado ainda.<br>Preencha o formulário acima para começar.</p>';
-      emptyEl.classList.remove('hidden');
-      tbody.innerHTML='';
-      return;
-    } else if(lista.length===0){
-      emptyEl.innerHTML = '<div class="empty-icon">🔍</div><p>Nenhum resultado para essa busca.<br>Tente outros termos ou <strong>remova os filtros</strong>.</p>';
-      emptyEl.classList.remove('hidden');
-    } else {
-      emptyEl.classList.add('hidden');
-    }
-
-    lista.sort((a,b)=>a.nome.localeCompare(b.nome,'pt-BR'));
-    tbody.innerHTML = lista.map(a => `
-      <tr>
-        <td><img class="thumb" src="${a.foto||AVATAR_PLACEHOLDER}" alt=""></td>
-        <td>
-          <div class="cellname">${escapeHtml(a.nome)}</div>
-          <div class="cellsub">${a.telefone ? escapeHtml(a.telefone) : ''}</div>
-        </td>
-        <td class="mono" style="font-size:.82rem;">${escapeHtml(a.matricula)}</td>
-        <td style="font-size:.85rem;">${escapeHtml(a.turma)}</td>
-        <td><button class="status-pill ${a.status==='ativo'?'is-ok':'is-off'}" onclick="toggleStatus('${a.id}')" title="Clique para alternar">${a.status==='ativo'?'Ativo':'Inativo'}</button></td>
-        <td class="rowactions">
-          <button class="btn-icon" title="Ver carteirinha" onclick="verCarteirinhaSecretaria('${a.id}')">🪪</button>
-          <button class="btn-icon" title="Editar" onclick="editarAluno('${a.id}')">✏️</button>
-          <button class="btn-icon danger" title="Excluir" onclick="excluirAluno('${a.id}')">🗑️</button>
-        </td>
-      </tr>
-    `).join('');
-  }
-
-  function verCarteirinhaSecretaria(id){
-    const a = state.alunos.find(x=>x.id===id);
-    if(!a) return;
-    showTab('carteirinha');
-    document.getElementById('matriculaInputCard').value = a.matricula;
-    setTimeout(()=>{ buscarCarteirinha(); }, 60);
-  }
-
-  function carregarExemplo(){
-    if(state.alunos.length>0 && !confirm('Já existem alunos cadastrados. Adicionar 4 alunos de exemplo mesmo assim?')) return;
-    const exemplos = [
-      {nome:'Marina Costa Lima', matricula:'2026001', turma:'9º Ano A', telefone:'(82) 99999-0001'},
-      {nome:'Pedro Henrique Souza', matricula:'2026002', turma:'7º Ano B', telefone:'(82) 99999-0002'},
-      {nome:'Beatriz Andrade Silva', matricula:'2026003', turma:'1ª Série EM', telefone:''},
-      {nome:'Rafael Gomes Neto', matricula:'2026004', turma:'6º Ano C', telefone:'(82) 99999-0004'},
-    ];
-    exemplos.forEach(e => state.alunos.push({ id:uid(), ...e, foto:null, status:'ativo', criadoEm:Date.now() }));
-    saveState();
-    renderStudentsList();
-    renderStats();
-    showToast('4 alunos de exemplo adicionados ✓', 'ok');
-  }
-
-  function exportarBackup(){
-    const blob = new Blob([JSON.stringify(state,null,2)], {type:'application/json'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'backup-carteirinhas-' + new Date().toISOString().slice(0,10) + '.json';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-    showToast('Backup exportado com sucesso ✓', 'ok');
-  }
-
-  function importarBackup(e){
-    const file = e.target.files[0];
-    if(!file) return;
-    const reader = new FileReader();
-    reader.onload = function(ev){
-      try{
-        const data = JSON.parse(ev.target.result);
-        if(!Array.isArray(data.alunos)) throw new Error('formato inválido');
-        if(!confirm('Importar este backup vai substituir todos os dados atuais. Continuar?')) return;
-        state = { escolaNome: data.escolaNome || 'Minha Escola', alunos: data.alunos || [], acessos: data.acessos || [] };
-        saveState();
-        renderAll();
-        showToast('Backup importado com sucesso ✓', 'ok');
-      }catch(err){
-        showToast('Arquivo inválido. Verifique se é um backup gerado por este sistema.', 'err');
-      }
-    };
-    reader.readAsText(file);
-    e.target.value = '';
-  }
-
-  /* ---------------------------------------------------------
-     Carteirinha do aluno
-  --------------------------------------------------------- */
-  function buscarCarteirinha(){
-    const term = document.getElementById('matriculaInputCard').value.trim();
-    const result = document.getElementById('cardResult');
-    if(!term) return;
-    const aluno = state.alunos.find(a=>a.matricula===term);
+  // ---------- LOGIN: ALUNO ----------
+  window.loginAluno = async function(){
+    const matricula = document.getElementById("loginMatricula").value.trim();
+    if(!matricula){ toast("Digite sua matrícula", "err"); return; }
+    alunosCache = await loadAlunos();
+    const aluno = alunosCache.find(a => a.matricula.toLowerCase() === matricula.toLowerCase());
     if(!aluno){
-      result.innerHTML = `<div class="notfound">Nenhuma carteirinha encontrada para a matrícula <strong>${escapeHtml(term)}</strong>.<br><span style="font-size:.83rem;color:var(--slate-light);">Confira o número com a secretaria.</span></div>`;
+      toast("Matrícula não encontrada. Procure a secretaria.", "err");
+      shakeEl(document.getElementById("formAluno"));
       return;
     }
-    renderCard(aluno);
-  }
+    SESSION = { type: "aluno", aluno };
+    renderCarteirinha(aluno);
+    showScreen("carteirinha");
+  };
 
-  function renderCard(aluno){
-    const result = document.getElementById('cardResult');
-    const isAtivo = aluno.status === 'ativo';
-    const hoje = new Date().toLocaleDateString('pt-BR');
-    const ano = new Date().getFullYear();
-    result.innerHTML = `
-      <div class="idcard" id="idcardPrint">
-        <div class="idcard-stripe"></div>
-        <div class="idcard-head">
-          <div class="idcard-head-left">
-            <div class="idcard-school">${escapeHtml(state.escolaNome)}</div>
-            <div class="idcard-doctype">Carteirinha do estudante</div>
-          </div>
-          <div class="idcard-year">${ano}</div>
-        </div>
-        <div class="idcard-body">
-          <img class="idcard-photo" src="${aluno.foto||AVATAR_PLACEHOLDER}" alt="">
-          <div class="idcard-info">
-            <div class="idcard-name">${escapeHtml(aluno.nome)}</div>
-            <div class="idcard-row"><span>Matrícula</span><strong class="mono" style="font-size:.78rem;">${escapeHtml(aluno.matricula)}</strong></div>
-            <div class="idcard-row"><span>Turma</span><strong>${escapeHtml(aluno.turma)}</strong></div>
-            <div class="idcard-row"><span>Data de verificação</span><strong>${hoje}</strong></div>
-          </div>
-        </div>
-        <div class="idcard-foot">
-          <canvas id="qrCanvas" width="80" height="80"></canvas>
-          <div class="idcard-stamp ${isAtivo?'stamp-ok':'stamp-off'}">${isAtivo?'✓ Ativo':'✗ Inativo'}</div>
-        </div>
-      </div>
-      <div class="card-actions">
-        <button class="btn-secondary" onclick="window.print()" style="font-size:.82rem;">🖨 Imprimir</button>
-        <button class="btn-secondary" onclick="document.getElementById('cardResult').innerHTML=''; document.getElementById('matriculaInputCard').value=''; document.getElementById('matriculaInputCard').focus();" style="font-size:.82rem;">✕ Fechar</button>
-      </div>
-    `;
-    setTimeout(()=>{
-      const canvas = document.getElementById('qrCanvas');
-      if(canvas && window.QRCode){
-        QRCode.toCanvas(canvas, aluno.matricula, { width:80, margin:0, color:{ dark:'#1B2A4A', light:'#FFFFFF' } }, function(){});
-      }
-    }, 0);
-  }
+  // ---------- LOGIN: SECRETARIA ----------
+  window.loginSecretaria = async function(){
+    const senha = document.getElementById("secretariaSenha").value;
+    const confVisible = !document.getElementById("secretariaSenhaConfRow").classList.contains("hidden");
+    if(!senha){ toast("Digite a senha", "err"); return; }
 
-  /* ---------------------------------------------------------
-     Portaria — verificação
-  --------------------------------------------------------- */
-  function addLog(entry){
-    state.acessos.unshift({ ts:Date.now(), ...entry });
-    state.acessos = state.acessos.slice(0,50);
-    saveState();
-    renderLog();
-  }
-
-  function clearLog(){
-    if(!confirm('Limpar todo o registro de acessos?')) return;
-    state.acessos = [];
-    saveState();
-    renderLog();
-    showToast('Registro de acessos limpo');
-  }
-
-  function renderLog(){
-    const box = document.getElementById('logList');
-    if(!box) return;
-    if(state.acessos.length===0){
-      box.innerHTML = '<p class="muted" style="padding:12px 0;">Nenhuma verificação realizada ainda.</p>';
-      return;
-    }
-    box.innerHTML = state.acessos.map(l=>{
-      const hora = new Date(l.ts).toLocaleTimeString('pt-BR');
-      const cls = l.resultado==='liberado' ? 'is-ok' : (l.resultado==='inativo' ? 'is-warn' : 'is-off');
-      const label = l.resultado==='liberado' ? 'Liberado' : (l.resultado==='inativo' ? 'Inativo' : 'Não encontrado');
-      return `<div class="logrow"><span class="logdot ${cls}"></span><span class="logtime mono">${hora}</span><span class="logname">${escapeHtml(l.nome||l.matricula)}</span><span class="logstatus ${cls}">${label}</span></div>`;
-    }).join('');
-  }
-
-  function verificar(matriculaRaw){
-    stopScanner();
-    const matricula = (matriculaRaw||'').trim();
-    const panel = document.getElementById('verifyResult');
-    if(!matricula) return;
-    const aluno = state.alunos.find(a=>a.matricula===matricula);
-
-    if(!aluno){
-      panel.className = 'verify-panel is-off';
-      panel.innerHTML = `<div class="verify-icon">⛔</div><div class="verify-title">Acesso negado</div><p class="verify-sub">Matrícula "${escapeHtml(matricula)}" não encontrada.</p>`;
-      addLog({ matricula, nome:null, resultado:'nao_encontrado' });
-    } else if(aluno.status !== 'ativo'){
-      panel.className = 'verify-panel is-warn';
-      panel.innerHTML = `<div class="verify-icon">⚠️</div><div class="verify-title">Acesso negado</div><p class="verify-sub">Cadastro inativo</p><div class="verify-student"><img src="${aluno.foto||AVATAR_PLACEHOLDER}"><div><strong>${escapeHtml(aluno.nome)}</strong><br><span class="mono" style="font-size:.8rem;">${escapeHtml(aluno.matricula)}</span> · ${escapeHtml(aluno.turma)}</div></div>`;
-      addLog({ matricula, nome:aluno.nome, resultado:'inativo' });
+    const existe = await temSenha(SECRETARIA_SENHA_KEY);
+    if(!existe){
+      if(senha.length < 4){ toast("Crie uma senha com no mínimo 4 caracteres", "err"); return; }
+      const conf = document.getElementById("secretariaSenhaConf").value;
+      if(senha !== conf){ toast("As senhas não coincidem", "err"); return; }
+      await salvarSenha(SECRETARIA_SENHA_KEY, senha);
+      toast("Senha da secretaria criada com sucesso!", "ok");
     } else {
-      panel.className = 'verify-panel is-ok';
-      panel.innerHTML = `<div class="verify-icon">✅</div><div class="verify-title">Acesso liberado</div><div class="verify-student"><img src="${aluno.foto||AVATAR_PLACEHOLDER}"><div><strong>${escapeHtml(aluno.nome)}</strong><br><span class="mono" style="font-size:.8rem;">${escapeHtml(aluno.matricula)}</span> · ${escapeHtml(aluno.turma)}</div></div>`;
-      addLog({ matricula, nome:aluno.nome, resultado:'liberado' });
-    }
-
-    const input = document.getElementById('matriculaInputPortaria');
-    if(input){ input.value=''; input.focus(); }
-  }
-
-  function handlePortariaKey(e){
-    if(e.key==='Enter'){ verificar(document.getElementById('matriculaInputPortaria').value); }
-  }
-
-  /* ---------------------------------------------------------
-     Leitor de QR code via câmera
-  --------------------------------------------------------- */
-  async function startScanner(){
-    const video = document.getElementById('scanVideo');
-    const wrap = document.getElementById('scanWrap');
-    const statusEl = document.getElementById('scanStatus');
-    try{
-      scannerStream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:'environment' } });
-      video.srcObject = scannerStream;
-      await video.play();
-      wrap.classList.remove('hidden');
-      document.getElementById('btnStartScan').classList.add('hidden');
-      document.getElementById('btnStopScan').classList.remove('hidden');
-      scanning = true;
-      statusEl.textContent = 'Aponte a câmera para o QR code da carteirinha…';
-      requestAnimationFrame(scanFrame);
-    }catch(err){
-      statusEl.textContent = 'Não foi possível acessar a câmera. Use a digitação manual abaixo.';
-    }
-  }
-
-  function stopScanner(){
-    scanning = false;
-    if(scannerStream){ scannerStream.getTracks().forEach(t=>t.stop()); scannerStream=null; }
-    const wrap = document.getElementById('scanWrap');
-    if(wrap) wrap.classList.add('hidden');
-    const startBtn = document.getElementById('btnStartScan');
-    const stopBtn = document.getElementById('btnStopScan');
-    if(startBtn) startBtn.classList.remove('hidden');
-    if(stopBtn) stopBtn.classList.add('hidden');
-    const statusEl = document.getElementById('scanStatus');
-    if(statusEl) statusEl.textContent = '';
-  }
-
-  function scanFrame(){
-    if(!scanning) return;
-    const video = document.getElementById('scanVideo');
-    const canvas = document.getElementById('scanCanvas');
-    if(video && video.readyState===video.HAVE_ENOUGH_DATA && window.jsQR){
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const code = jsQR(imgData.data, imgData.width, imgData.height);
-      if(code && code.data){
-        verificar(code.data);
+      const ok = await validarSenha(SECRETARIA_SENHA_KEY, senha);
+      if(!ok){
+        toast("Senha incorreta", "err");
+        shakeEl(document.getElementById("formSecretaria"));
         return;
       }
     }
-    requestAnimationFrame(scanFrame);
+    document.getElementById("secretariaSenha").value = "";
+    if(confVisible) document.getElementById("secretariaSenhaConf").value = "";
+    SESSION = { type: "secretaria" };
+    showScreen("secretaria");
+  };
+
+  // ---------- LOGIN: PORTARIA ----------
+  window.loginPortaria = async function(){
+    const senha = document.getElementById("portariaSenha").value;
+    const confVisible = !document.getElementById("portariaSenhaConfRow").classList.contains("hidden");
+    if(!senha){ toast("Digite a senha", "err"); return; }
+
+    const existe = await temSenha(PORTARIA_SENHA_KEY);
+    if(!existe){
+      if(senha.length < 4){ toast("Crie uma senha com no mínimo 4 caracteres", "err"); return; }
+      const conf = document.getElementById("portariaSenhaConf").value;
+      if(senha !== conf){ toast("As senhas não coincidem", "err"); return; }
+      await salvarSenha(PORTARIA_SENHA_KEY, senha);
+      toast("Senha da portaria criada com sucesso!", "ok");
+    } else {
+      const ok = await validarSenha(PORTARIA_SENHA_KEY, senha);
+      if(!ok){
+        toast("Senha incorreta", "err");
+        shakeEl(document.getElementById("formPortaria"));
+        return;
+      }
+    }
+    document.getElementById("portariaSenha").value = "";
+    if(confVisible) document.getElementById("portariaSenhaConf").value = "";
+    SESSION = { type: "portaria" };
+    showScreen("portaria");
+  };
+
+  // ---------- TROCA DE TELAS ----------
+  function showScreen(name){
+    const screens = { login:"screen-login", secretaria:"screen-secretaria", carteirinha:"screen-carteirinha", portaria:"screen-portaria" };
+    Object.values(screens).forEach(id => document.getElementById(id).classList.add("hidden"));
+    document.getElementById(screens[name]).classList.remove("hidden");
+    if(name === "secretaria"){ refreshAlunosAndRender(); }
+    if(name === "portaria"){ resetResultPanel(); document.getElementById("portaInput").value = ""; document.getElementById("portaInput").focus(); }
   }
 
-  /* ---------------------------------------------------------
-     Inicialização
-  --------------------------------------------------------- */
-  function renderAll(){
-    document.getElementById('escolaNomeInput').value = state.escolaNome;
-    document.getElementById('fotoPreview').src = AVATAR_PLACEHOLDER;
-    renderStudentsList();
-    renderStats();
-    renderLog();
-    renderSecretaria();
+  window.logout = function(){
+    SESSION = null;
+    document.getElementById("loginMatricula").value = "";
+    document.getElementById("secretariaSenha").value = "";
+    document.getElementById("secretariaSenhaConf").value = "";
+    document.getElementById("portariaSenha").value = "";
+    document.getElementById("portariaSenhaConf").value = "";
+    switchType("aluno");
+    showScreen("login");
+  };
+
+  // ---------- FORM SECRETARIA: CADASTRO DE ALUNO ----------
+  const form = document.getElementById("alunoForm");
+  const formMsg = document.getElementById("formMsg");
+  const submitBtn = document.getElementById("submitBtn");
+  const cancelEditBtn = document.getElementById("cancelEditBtn");
+
+  function showFormMsg(text, kind){ formMsg.textContent = text; formMsg.className = "form-msg show " + kind; }
+  function clearFormMsg(){ formMsg.className = "form-msg"; }
+  function resetForm(){
+    form.reset();
+    document.getElementById("f-status").value = "Ativo";
+    editingId = null;
+    document.getElementById("editId").value = "";
+    submitBtn.textContent = "Cadastrar aluno";
+    cancelEditBtn.style.display = "none";
+    clearFormMsg();
   }
+  cancelEditBtn.addEventListener("click", resetForm);
 
-  document.addEventListener('DOMContentLoaded', renderAll);
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    clearFormMsg();
+    const nome = document.getElementById("f-nome").value.trim();
+    const matricula = document.getElementById("f-matricula").value.trim();
+    const turma = document.getElementById("f-turma").value.trim();
+    const turno = document.getElementById("f-turno").value;
+    const statusCadastro = document.getElementById("f-status").value;
+    const localTrabalho = document.getElementById("f-local").value.trim();
+    const horarioEntrada = document.getElementById("f-horario").value;
+    const validade = document.getElementById("f-validade").value;
 
-  // Fechar modal com Escape
-  document.addEventListener('keydown', e => {
-    if(e.key === 'Escape') closePinModal();
+    if(!nome || !matricula || !turma || !turno){
+      showFormMsg("Preencha nome, matrícula, turma e turno.", "error");
+      return;
+    }
+    const dup = alunosCache.find(a => a.matricula.toLowerCase() === matricula.toLowerCase() && a.id !== editingId);
+    if(dup){ showFormMsg("Já existe um aluno cadastrado com essa matrícula.", "error"); return; }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Salvando…";
+
+    if(editingId){
+      const idx = alunosCache.findIndex(a => a.id === editingId);
+      if(idx > -1) alunosCache[idx] = { ...alunosCache[idx], nome, matricula, turma, turno, statusCadastro, localTrabalho, horarioEntrada, validade };
+    } else {
+      alunosCache.push({ id: uid(), nome, matricula, turma, turno, statusCadastro, localTrabalho, horarioEntrada, validade, criadoEm: new Date().toISOString() });
+    }
+
+    const ok = await saveAlunos(alunosCache);
+    submitBtn.disabled = false;
+
+    if(ok){
+      showFormMsg(editingId ? "Cadastro atualizado." : "Aluno cadastrado com sucesso.", "ok");
+      resetForm();
+      renderTable();
+    } else {
+      showFormMsg("Não foi possível salvar agora. Tente novamente.", "error");
+      submitBtn.textContent = editingId ? "Salvar alterações" : "Cadastrar aluno";
+    }
   });
+
+  // ---------- TABELA ----------
+  const tbody = document.getElementById("alunosTbody");
+  const statPill = document.getElementById("statPill");
+  const searchInput = document.getElementById("searchAlunos");
+
+  async function refreshAlunosAndRender(){
+    statPill.textContent = "carregando…";
+    alunosCache = await loadAlunos();
+    renderTable();
+  }
+
+  function renderTable(){
+    const term = searchInput.value.trim().toLowerCase();
+    const filtered = alunosCache.filter(a => !term || a.nome.toLowerCase().includes(term) || a.matricula.toLowerCase().includes(term));
+    const ativos = alunosCache.filter(a => computeStatus(a).ativo).length;
+    statPill.textContent = `${alunosCache.length} cadastrados · ${ativos} ativos`;
+
+    if(filtered.length === 0){
+      tbody.innerHTML = `<tr class="empty-row"><td colspan="7">${alunosCache.length === 0 ? "Nenhum aluno cadastrado ainda. Use o formulário acima." : "Nenhum resultado para essa busca."}</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = filtered.map(a => {
+      const st = computeStatus(a);
+      return `
+        <tr data-id="${a.id}">
+          <td>${escapeHtml(a.nome)}</td>
+          <td class="mono-cell">${escapeHtml(a.matricula)}</td>
+          <td>${escapeHtml(a.turma)}</td>
+          <td>${escapeHtml(a.turno)}</td>
+          <td class="mono-cell">${formatDateBR(a.validade)}</td>
+          <td><span class="badge ${st.ativo ? "ok" : "bad"}"><span class="badge-dot"></span>${st.ativo ? "Ativo" : "Inativo"}</span></td>
+          <td><button class="btn-edit-text" data-action="edit">Editar</button><button class="btn-danger-text" data-action="delete">Excluir</button></td>
+        </tr>`;
+    }).join("");
+  }
+  searchInput.addEventListener("input", renderTable);
+
+  tbody.addEventListener("click", async (e) => {
+    const btn = e.target.closest("button[data-action]");
+    if(!btn) return;
+    const tr = btn.closest("tr");
+    const id = tr.dataset.id;
+    const aluno = alunosCache.find(a => a.id === id);
+    if(!aluno) return;
+
+    if(btn.dataset.action === "edit"){
+      editingId = id;
+      document.getElementById("editId").value = id;
+      document.getElementById("f-nome").value = aluno.nome;
+      document.getElementById("f-matricula").value = aluno.matricula;
+      document.getElementById("f-turma").value = aluno.turma;
+      document.getElementById("f-turno").value = aluno.turno;
+      document.getElementById("f-status").value = aluno.statusCadastro || "Ativo";
+      document.getElementById("f-local").value = aluno.localTrabalho || "";
+      document.getElementById("f-horario").value = aluno.horarioEntrada || "";
+      document.getElementById("f-validade").value = aluno.validade || "";
+      submitBtn.textContent = "Salvar alterações";
+      cancelEditBtn.style.display = "inline-flex";
+      clearFormMsg();
+      form.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+    if(btn.dataset.action === "delete"){
+      if(!confirm(`Excluir o cadastro de ${aluno.nome}? Essa ação não pode ser desfeita.`)) return;
+      alunosCache = alunosCache.filter(a => a.id !== id);
+      await saveAlunos(alunosCache);
+      renderTable();
+    }
+  });
+
+  // ---------- CARTEIRINHA (renderização) ----------
+  function renderCarteirinha(aluno){
+    const st = computeStatus(aluno);
+    const el = document.getElementById("carteirinhaContent");
+    el.innerHTML = `
+      <div class="card-wrap">
+        <div class="id-card">
+          <p class="id-eyebrow">Carteirinha de aluno trabalhador</p>
+          <div class="id-top">
+            <div class="id-avatar">${initials(aluno.nome)}</div>
+            <div>
+              <div class="id-name">${escapeHtml(aluno.nome)}</div>
+              <div class="id-turma">${escapeHtml(aluno.turma)} · ${escapeHtml(aluno.turno)}</div>
+            </div>
+          </div>
+          <div class="id-divider"></div>
+          <div class="id-grid">
+            <div class="id-field"><label>Matrícula</label><div>${escapeHtml(aluno.matricula)}</div></div>
+            <div class="id-field"><label>Validade</label><div>${aluno.validade ? formatDateBR(aluno.validade) : "Sem prazo"}</div></div>
+            ${aluno.horarioEntrada ? `<div class="id-field"><label>Entrada autorizada</label><div>${aluno.horarioEntrada}</div></div>` : ""}
+            ${aluno.localTrabalho ? `<div class="id-field"><label>Local de trabalho</label><div style="font-family:var(--body); font-size:12.5px;">${escapeHtml(aluno.localTrabalho)}</div></div>` : ""}
+          </div>
+          <div class="id-bottom">
+            <div id="qrcode-card"></div>
+            <div>
+              <div class="stamp ${st.ativo ? "ok" : "bad"}">${st.ativo ? "ATIVO" : "INATIVO"}</div>
+              ${!st.ativo ? `<div class="id-reason">${escapeHtml(st.motivo)}</div>` : ""}
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    const qrEl = document.getElementById("qrcode-card");
+    if(qrEl && window.QRCode){
+      qrEl.innerHTML = "";
+      new QRCode(qrEl, { text: "ALUNO:" + aluno.matricula, width: 76, height: 76, colorDark: "#2D1F0E", colorLight: "#ffffff" });
+    }
+  }
+
+  // ---------- PORTARIA ----------
+  const portaInput = document.getElementById("portaInput");
+  const portaBtn = document.getElementById("portaBtn");
+  const resultPanel = document.getElementById("resultPanel");
+  const portaClearBtn = document.getElementById("portaClearBtn");
+  const logList = document.getElementById("logList");
+  const sessionLog = [];
+
+  function addLog(matricula, ok, label){
+    const time = new Date().toLocaleTimeString("pt-BR", { hour:"2-digit", minute:"2-digit" });
+    sessionLog.unshift({ time, matricula, ok, label });
+    if(sessionLog.length > 8) sessionLog.pop();
+    logList.innerHTML = sessionLog.map(l => `<li><span>${l.time} · ${escapeHtml(l.matricula)}</span><span class="log-status ${l.ok ? "ok" : "bad"}">${escapeHtml(l.label)}</span></li>`).join("");
+  }
+  function resetResultPanel(){
+    resultPanel.className = "result-panel";
+    resultPanel.innerHTML = `<div class="ph-icon">🪪</div><div class="ph-text">Aguardando verificação</div>`;
+  }
+  async function doVerify(){
+    const term = portaInput.value.trim();
+    if(!term) return;
+    resultPanel.className = "result-panel";
+    resultPanel.innerHTML = `<div class="ph-text">Verificando…</div>`;
+
+    const fresh = await loadAlunos();
+    alunosCache = fresh;
+    const aluno = fresh.find(a => a.matricula.toLowerCase() === term.toLowerCase());
+
+    if(!aluno){
+      resultPanel.className = "result-panel warn";
+      resultPanel.innerHTML = `<div class="result-stamp animate">NÃO ENCONTRADO</div><div class="result-meta">Matrícula "${escapeHtml(term)}" não está cadastrada.</div><div class="result-extra">Encaminhe o aluno até a secretaria.</div>`;
+      addLog(term, false, "Não encontrado");
+      return;
+    }
+    const st = computeStatus(aluno);
+    if(st.ativo){
+      resultPanel.className = "result-panel ok";
+      resultPanel.innerHTML = `<div class="result-stamp animate">AUTORIZADO</div><div class="result-name">${escapeHtml(aluno.nome)}</div><div class="result-meta">${escapeHtml(aluno.turma)} · ${escapeHtml(aluno.turno)}</div>${aluno.horarioEntrada ? `<div class="result-extra">Entrada autorizada a partir das ${aluno.horarioEntrada}</div>` : ""}`;
+      addLog(aluno.matricula, true, "Autorizado");
+    } else {
+      resultPanel.className = "result-panel bad";
+      resultPanel.innerHTML = `<div class="result-stamp animate">NÃO AUTORIZADO</div><div class="result-name">${escapeHtml(aluno.nome)}</div><div class="result-meta">${escapeHtml(aluno.turma)} · ${escapeHtml(aluno.turno)}</div><div class="result-extra">${escapeHtml(st.motivo)}</div>`;
+      addLog(aluno.matricula, false, "Bloqueado");
+    }
+  }
+  portaBtn.addEventListener("click", doVerify);
+  portaInput.addEventListener("keydown", (e) => { if(e.key === "Enter") doVerify(); });
+  portaClearBtn.addEventListener("click", () => { portaInput.value = ""; resetResultPanel(); portaInput.focus(); });
+
+  // ---------- INIT ----------
+  (async function init(){
+    await refreshSchoolBranding();
+  })();
+
+})();
 </script>
 </body>
 </html>
