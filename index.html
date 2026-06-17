@@ -31,16 +31,27 @@
   const db   = getFirestore(app);
   const auth = getAuth(app);
 
-  // Login anônimo para ter permissão de leitura/escrita
-  signInAnonymously(auth).catch(err => {
-    console.error("Firebase Auth error:", err);
-  });
+  // Expõe a camada de storage ANTES do auth para que o objeto exista,
+  // mas as operações aguardam o auth estar pronto
+  let authReady = false;
+  let authError = null;
 
-  // Expõe a camada de storage compatível com o código existente
-  // Todos os dados ficam em /carteirinha/{key}/value no Firestore
+  const authPromise = signInAnonymously(auth)
+    .then(() => { authReady = true; console.log("✅ Firebase Auth OK"); })
+    .catch(err => {
+      authError = err;
+      console.error("❌ Firebase Auth error:", err);
+      // Mostra erro visível na tela
+      const div = document.createElement("div");
+      div.style.cssText = "position:fixed;top:0;left:0;right:0;z-index:9999;background:#C0392B;color:#fff;padding:14px 20px;font-family:sans-serif;font-size:14px;text-align:center;";
+      div.innerHTML = "❌ <strong>Erro Firebase Auth:</strong> " + err.message + " — Verifique se a autenticação anônima está ativada no Console do Firebase.";
+      document.body.prepend(div);
+    });
+
   window.storage = {
     async get(key) {
       try {
+        await authPromise;
         const snap = await getDoc(doc(db, "carteirinha", key));
         if (!snap.exists()) return null;
         return { key, value: snap.data().value };
@@ -51,15 +62,24 @@
     },
     async set(key, value) {
       try {
+        await authPromise;
         await setDoc(doc(db, "carteirinha", key), { value });
+        console.log("✅ Firestore set OK:", key);
         return { key, value };
       } catch (e) {
-        console.error("Firebase set error:", e);
+        console.error("❌ Firebase set error:", e);
+        // Mostra erro visível
+        const div = document.createElement("div");
+        div.style.cssText = "position:fixed;bottom:70px;left:50%;transform:translateX(-50%);z-index:9999;background:#C0392B;color:#fff;padding:10px 18px;border-radius:8px;font-family:sans-serif;font-size:13px;max-width:90vw;text-align:center;";
+        div.textContent = "❌ Erro ao salvar no Firebase: " + e.message;
+        document.body.appendChild(div);
+        setTimeout(() => div.remove(), 6000);
         return null;
       }
     },
     async delete(key) {
       try {
+        await authPromise;
         await deleteDoc(doc(db, "carteirinha", key));
         return { key, deleted: true };
       } catch (e) {
@@ -68,13 +88,14 @@
       }
     },
     async list(prefix) {
-      // list() não é necessário nesta app — retorna vazio
       return { keys: [] };
     }
   };
 
-  // Sinaliza que o Firebase está pronto
-  window.dispatchEvent(new Event("firebase-ready"));
+  // Sinaliza que o Firebase está pronto APÓS o auth completar
+  authPromise.finally(() => {
+    window.dispatchEvent(new Event("firebase-ready"));
+  });
 </script>
 <style>
   *,*::before,*::after{box-sizing:border-box; margin:0; padding:0;}
