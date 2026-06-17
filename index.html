@@ -7,6 +7,75 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+  // ══════════════════════════════════════════════════
+  //  🔧 CONFIGURE AQUI AS CREDENCIAIS DO SEU PROJETO
+  // ══════════════════════════════════════════════════
+  const firebaseConfig = {
+    apiKey:            "AIzaSyD2kkJBbO43vn--Ag1bUgnYqFbIxd-eOHU",
+    authDomain:        "alunos-que-trabalhao.firebaseapp.com",
+    projectId:         "alunos-que-trabalhao",
+    storageBucket:     "alunos-que-trabalhao.firebasestorage.app",
+    messagingSenderId: "723603118406",
+    appId:             "1:723603118406:web:ea5b3b75729a142fea6d47",
+    measurementId:     "G-G4T5NSNMWH"
+  };
+  // ══════════════════════════════════════════════════
+
+  const app  = initializeApp(firebaseConfig);
+  const db   = getFirestore(app);
+  const auth = getAuth(app);
+
+  // Login anônimo para ter permissão de leitura/escrita
+  signInAnonymously(auth).catch(err => {
+    console.error("Firebase Auth error:", err);
+  });
+
+  // Expõe a camada de storage compatível com o código existente
+  // Todos os dados ficam em /carteirinha/{key}/value no Firestore
+  window.storage = {
+    async get(key) {
+      try {
+        const snap = await getDoc(doc(db, "carteirinha", key));
+        if (!snap.exists()) return null;
+        return { key, value: snap.data().value };
+      } catch (e) {
+        console.error("Firebase get error:", e);
+        return null;
+      }
+    },
+    async set(key, value) {
+      try {
+        await setDoc(doc(db, "carteirinha", key), { value });
+        return { key, value };
+      } catch (e) {
+        console.error("Firebase set error:", e);
+        return null;
+      }
+    },
+    async delete(key) {
+      try {
+        await deleteDoc(doc(db, "carteirinha", key));
+        return { key, deleted: true };
+      } catch (e) {
+        console.error("Firebase delete error:", e);
+        return null;
+      }
+    },
+    async list(prefix) {
+      // list() não é necessário nesta app — retorna vazio
+      return { keys: [] };
+    }
+  };
+
+  // Sinaliza que o Firebase está pronto
+  window.dispatchEvent(new Event("firebase-ready"));
+</script>
 <style>
   *,*::before,*::after{box-sizing:border-box; margin:0; padding:0;}
   :root{
@@ -283,6 +352,8 @@
 </head>
 <body>
 
+
+
 <!-- ═══════════════════ TELA: LOGIN ═══════════════════ -->
 <div id="screen-login">
   <div class="bg-c1"></div>
@@ -533,7 +604,10 @@
 <div class="toast" id="toast"></div>
 
 <script>
-(function(){
+// Aguarda o Firebase estar pronto antes de inicializar o app
+(function bootstrap(){
+  function startApp(){
+    (function(){
   "use strict";
 
   // ---------- STORAGE KEYS ----------
@@ -1021,6 +1095,14 @@
     await refreshSchoolBranding();
   })();
 
+    })();
+  }
+  // Firebase SDK é type="module" e carrega de forma assíncrona
+  if (window.storage) {
+    startApp();
+  } else {
+    window.addEventListener("firebase-ready", startApp, { once: true });
+  }
 })();
 </script>
 </body>
